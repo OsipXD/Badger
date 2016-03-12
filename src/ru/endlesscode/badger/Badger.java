@@ -6,9 +6,7 @@ import ru.endlesscode.badger.thread.ThreadCompleteListener;
 import ru.endlesscode.badger.utils.Utils;
 
 import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -30,6 +28,10 @@ public class Badger implements ThreadCompleteListener {
     }
 
     public static void main(String[] args) {
+        if (setupBadger()) {
+            return;
+        }
+
         processPhotos();
     }
 
@@ -126,6 +128,56 @@ public class Badger implements ThreadCompleteListener {
         badger.run();
         badger.waitThreads();
         System.out.println("Завершено ("+ (System.nanoTime() - start) / 10000000 / 100. + " s)");
+    }
+
+    public static boolean setupBadger() {
+        File resultFolder = new File("Badger/result");
+        File photosFolder = new File("Badger/photos");
+        File namesFile = new File("Badger/input.txt");
+        boolean reload = false;
+
+        if (!resultFolder.exists()) {
+            resultFolder.mkdirs();
+            reload = true;
+        }
+
+        if (!photosFolder.exists()) {
+            photosFolder.mkdirs();
+            reload = true;
+        }
+
+        if (!namesFile.exists()) {
+            try (PrintWriter writer = new PrintWriter(namesFile, "UTF-8")) {
+                writer.println(
+                        "# Здесь должны быть данные о людях в таком формате:\n" +
+                        "#      [Фамилия Имя] (Отчество) : [Тип бейджа] : (Доп. текст) - (Личная цитата)\n" +
+                        "# [] - Обязательное, () - Необязательное\n" +
+                        "# Фамилия Имя Отчество: пишутся именно в таком порядке и с большей буквы\n" +
+                        "# Типы бейджей: школьник, сотрудник, гость, некто (можно использовать сокращения, лавное чтобы начиналось на правильную букву)\n" +
+                        "# Доп. текст: тут можно написать должность человека\n" +
+                        "# Личная цитата: пишется после тире, цитата для этого ч-ка не рандомится\n" +
+                        "#\n" +
+                        "# Примеры правильных данных: \n" +
+                        "#      Ктулху Владыка Миров : некто - Вот проснусь и всех зохаваю. И никакой Чак Норрис не помешает.\n" +
+                        "#      Иванов Пётр : шк.\n" +
+                        "#      Ройтберг Михаил Абрамович : создатель : Директор ЗПШ\n" +
+                        "#\n" +
+                        "# Строки, начинающиеся с '#' считаются комментариями и не учитываются\n"
+                );
+                reload = true;
+            } catch (FileNotFoundException | UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (reload) {
+            System.out.println("Папка \"Badger\" подготовлена к работе.\n" +
+                    "1. Закиньте фотографии в папку \"photos\"\n" +
+                    "2. Внесите данные в файл \"input.txt\"\n" +
+                    "3. Запустите программу заново!"
+            );
+        }
+        return reload;
     }
 
     @Override
