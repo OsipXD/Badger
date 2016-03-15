@@ -8,6 +8,10 @@ import org.json.JSONObject;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Random;
 
 /**
@@ -93,5 +97,25 @@ public class Utils {
         }
 
         return faces.getJSONObject(mainFace);
+    }
+
+    /**
+     * Export a resource embedded into a Jar file to the local file path.
+     *
+     * @param resourceName ie.: "file.ext"
+     * @throws Exception
+     */
+    static public void exportResource(String resourceName) throws Exception {
+        try (InputStream stream = Utils.class.getClass().getResourceAsStream("/" + resourceName); OutputStream resStreamOut = new FileOutputStream(new File("Badger", resourceName))) {
+            if (stream == null) {
+                throw new Exception("Cannot get resource \"" + resourceName + "\" from Jar file.");
+            }
+
+            int readBytes;
+            byte[] buffer = new byte[4096];
+            while ((readBytes = stream.read(buffer)) > 0) {
+                resStreamOut.write(buffer, 0, readBytes);
+            }
+        }
     }
 }

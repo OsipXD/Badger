@@ -25,8 +25,8 @@ public class Face {
     public static final int SEND_COMPRESSION = 3;
     public static final float CRITICAL_WIDTH = 0.2f;
     public static final float CRITICAL_HEIGHT = 0.3f;
-    public static final float PHOTO_WIDTH = 360;
-    public static final float PHOTO_HEIGHT = 480;
+    public static final float PHOTO_WIDTH = 320;
+    public static final float PHOTO_HEIGHT = 490;
     public static final float RATIO = PHOTO_WIDTH / PHOTO_HEIGHT;
 
     private final BufferedImage image;

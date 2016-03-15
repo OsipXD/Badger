@@ -1,190 +1,95 @@
 package ru.endlesscode.badger;
 
-import ru.endlesscode.badger.face.Face;
-import ru.endlesscode.badger.thread.NotifyingThread;
-import ru.endlesscode.badger.thread.ThreadCompleteListener;
+import ru.endlesscode.badger.misc.Config;
 import ru.endlesscode.badger.utils.Utils;
 
-import javax.imageio.ImageIO;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.io.File;
+import java.io.IOException;
 
-public class Badger implements ThreadCompleteListener {
-    public static final int MAX_THREAD_NUM = 10;
-
-    private final String nameFile;
-    private final String photoDir;
-
-    private int threadNum = 0;
-    private final List<Thread> threads = new ArrayList<>();
-
-    public Badger(String nameFile, String photoDir) {
-        this.nameFile = nameFile;
-        this.photoDir = photoDir;
-    }
+public class Badger {
+    private static EntryManager entryManager;
 
     public static void main(String[] args) {
-        if (setupBadger()) {
+        // Первичная подготовка
+        try {
+            setupBadger();
+        } catch (Exception e) {
+            e.printStackTrace();
             return;
         }
 
+        entryManager = new EntryManager("input.txt");
+
+        // Обработка фотографий
         processPhotos();
-    }
+        BadgePainter.initFonts();
 
-    public void run() {
-        try (Scanner namesFile = new Scanner(new File(this.nameFile))) {
-            List<String> nameList = new ArrayList<>();
-//            while (namesFile.hasNextLine()) {
-//                nameList.add(namesFile.nextLine());
-//            }
-
-            File photosDir = new File(this.photoDir);
-            File[] files = photosDir.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".jpg") || name.endsWith(".JPG");
-                }
-            });
-
-            if (files == null) {
-                System.out.println("Папка фотографий пуста!");
-                return;
-            }
-
-            for (File file1 : files) {
-                nameList.add(Utils.generateRandomString(10));
-            }
-
-            if (nameList.size() != files.length) {
-                System.out.println("Количество имен в списке (" + nameList.size() + ") не совпадает с количеством файлов в папке (" + files.length + ")!");
-                return;
-            }
-
-            for (int i = 0; i < files.length; i++) {
-                final File file = files[i];
-                final String name = nameList.get(i);
-
-                try {
-                    while (this.threadNum >= MAX_THREAD_NUM) {
-                        Thread.sleep(1000);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                this.processPhoto(file, name);
-            }
+        try {
+            BadgePainter.drawBadge(entryManager.getEntryList().get(2));
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    public void processPhoto(final File file, final String name) {
-        NotifyingThread newThread = new NotifyingThread() {
-            @Override
-            public void doRun() {
-                try {
-                    Face face = new Face(file);
-                    face.drawFaceBorder();
-                    ImageIO.write(face.getImage(), "jpg", new File((face.isDoubtful() ? "result/check/" : "result/") + name + ".jpg"));
-                } catch (Exception e) {
-                    System.out.println("Ошибка обработки: " + e.getMessage());
-
-                    try {
-                        Files.copy(file.toPath(), new File("result/bad/" + name + ".jpg").toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            }
-        };
-
-        newThread.addListener(this);
-        newThread.start();
-
-        synchronized (Badger.class) {
-            this.threads.add(newThread);
-            this.threadNum++;
-        }
-    }
-
-    public void waitThreads() {
-        for (Thread thread : new ArrayList<>(this.threads)) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void processPhotos() {
-        long start = System.nanoTime();
-        Badger badger = new Badger("names.txt", "photos1");
-        badger.run();
-        badger.waitThreads();
-        System.out.println("Завершено ("+ (System.nanoTime() - start) / 10000000 / 100. + " s)");
-    }
-
-    public static boolean setupBadger() {
-        File resultFolder = new File("Badger/result");
+    public static void setupBadger() throws Exception {
+        File resultFolder = new File("Badger/result/confirmed");
         File photosFolder = new File("Badger/photos");
-        File namesFile = new File("Badger/input.txt");
-        boolean reload = false;
 
         if (!resultFolder.exists()) {
             resultFolder.mkdirs();
-            reload = true;
         }
 
         if (!photosFolder.exists()) {
             photosFolder.mkdirs();
-            reload = true;
         }
 
-        if (!namesFile.exists()) {
-            try (PrintWriter writer = new PrintWriter(namesFile, "UTF-8")) {
-                writer.println(
-                        "# Здесь должны быть данные о людях в таком формате:\n" +
-                        "#      [Фамилия Имя] (Отчество) : [Тип бейджа] : (Доп. текст) - (Личная цитата)\n" +
-                        "# [] - Обязательное, () - Необязательное\n" +
-                        "# Фамилия Имя Отчество: пишутся именно в таком порядке и с большей буквы\n" +
-                        "# Типы бейджей: школьник, сотрудник, гость, некто (можно использовать сокращения, лавное чтобы начиналось на правильную букву)\n" +
-                        "# Доп. текст: тут можно написать должность человека\n" +
-                        "# Личная цитата: пишется после тире, цитата для этого ч-ка не рандомится\n" +
-                        "#\n" +
-                        "# Примеры правильных данных: \n" +
-                        "#      Ктулху Владыка Миров : некто - Вот проснусь и всех зохаваю. И никакой Чак Норрис не помешает.\n" +
-                        "#      Иванов Пётр : шк.\n" +
-                        "#      Ройтберг Михаил Абрамович : создатель : Директор ЗПШ\n" +
-                        "#\n" +
-                        "# Строки, начинающиеся с '#' считаются комментариями и не учитываются\n"
-                );
-                reload = true;
-            } catch (FileNotFoundException | UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
+        Config.loadConfig();
+        Utils.exportResource("input.txt");
 
-        if (reload) {
-            System.out.println("Папка \"Badger\" подготовлена к работе.\n" +
-                    "1. Закиньте фотографии в папку \"photos\"\n" +
-                    "2. Внесите данные в файл \"input.txt\"\n" +
-                    "3. Запустите программу заново!"
-            );
-        }
-        return reload;
+        System.out.println("Папка \"Badger\" подготовлена к работе.\n" +
+                "1. Закиньте фотографии в папку \"photos\"\n" +
+                "2. Внесите данные в файл \"input.txt\"\n" +
+                "3. Выставьте нужные настройки в файле \"badger.properties\""
+        );
+
+        Badger.waitEnter();
+        //TODO: Проверка выполнения
     }
 
-    @Override
-    public void notifyOfThreadComplete(Thread thread) {
-        synchronized (Badger.class) {
-            this.threads.remove(thread);
-            this.threadNum--;
+    public static void processPhotos() {
+        PhotoManager photoManager = new PhotoManager("photos");
+        long start = System.nanoTime();
+        boolean photosDone = photoManager.run();
+        while (!photosDone) {
+            Badger.waitEnter();
+            photosDone = photoManager.run();
         }
+
+        photoManager.waitThreads();
+
+        System.out.println("Фотографии вырезаны ("+ (System.nanoTime() - start) / 10000000 / 100. + " s)\n" +
+                "1. Проверьте правильность вырезанных фотографий\n" +
+                "2. Проверьте сомнительные фоторафии в папке \"check\" и \"bad\"\n" +
+                "3. Вырежте вручную неудачные фотографии\n" +
+                "4. Перенесите удачные фотографии в папку \"confirmed\""
+        );
+
+        Badger.waitEnter();
+
+        //TODO: Проверка выполнения
+    }
+
+    public static void waitEnter() {
+        System.out.println("[Нажмите Enter чтобы продолжить]");
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static EntryManager getEntryManager() {
+        return entryManager;
     }
 }
