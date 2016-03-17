@@ -8,7 +8,7 @@ import ru.endlesscode.badger.utils.FileUtils;
 import java.io.File;
 import java.io.IOException;
 
-public class Badger {
+class Badger {
 
     private static EntryManager entryManager;
     private static QuoteManager quoteManager;
@@ -34,7 +34,7 @@ public class Badger {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void setupBadger() throws Exception {
+    private static void setupBadger() throws Exception {
         new File("Badger/temp/bad").mkdirs();
         new File("Badger/temp/badges").mkdirs();
         new File("Badger/temp/check").mkdirs();
@@ -52,6 +52,9 @@ public class Badger {
         if (!new File("Badger", "input.txt").exists()) {
             FileUtils.exportResource("input.txt");
         }
+        if (!new File("Badger", "quotes.txt").exists()) {
+            FileUtils.exportResource("quotes.txt");
+        }
 
         System.out.println("Папка \"Badger\" подготовлена к работе.\n" +
                 "1. Закиньте фотографии в папку \"photos\"\n" +
@@ -61,33 +64,33 @@ public class Badger {
                 "5. Поместите файлы оформления в папку \"res\""
         );
 
-        boolean error = false;
-
+        boolean error;
         do {
+            error = false;
             Badger.waitEnter();
             for (Entry.EntryType type : Entry.EntryType.values()) {
-                File typeFile = new File(imagesDir, type.name() + ".png");
+                File typeFile = new File(imagesDir, type.name().toLowerCase() + ".png");
                 if (!typeFile.exists()) {
-                    System.out.println("Ошибка: файл \"" + typeFile.getAbsolutePath() + ".png" + "\" не найден!");
+                    System.out.println("Ошибка: файл \"" + typeFile.getAbsolutePath() + "\" не найден!");
                     error = true;
                 }
             }
-        } while(error);
+        } while (error);
 
         entryManager = new EntryManager("input.txt");
         File[] photos = FileUtils.listOfImages(photosDir);
         assert photos != null;
-        while(photos.length != entryManager.getEntryList().size()) {
+        while (photos.length != entryManager.getEntryList().size()) {
             System.out.println("Количество имен в списке (" + entryManager.getEntryList().size() + ") не совпадает с количеством фотографий в папке (" + photos.length + ")!");
             Badger.waitEnter();
             entryManager.parse();
         }
-        quoteManager = new QuoteManager("quotes.txt");
 
+        quoteManager = new QuoteManager("quotes.txt");
         Config.loadConfig();
     }
 
-    public static void processPhotos() {
+    private static void processPhotos() {
         PhotoManager photoManager = new PhotoManager("photos");
         Timer timer = new Timer();
         timer.start();
@@ -98,13 +101,13 @@ public class Badger {
         }
 
         photoManager.waitThreads();
-        photoManager.stopProgressBar("Фотографии вырезаны ("+ timer.stop() + " s)");
+        photoManager.stopProgressBar("Фотографии вырезаны (" + timer.stop() + " s)");
 
         System.out.println(
                 "1. Проверьте правильность вырезанных фотографий\n" +
-                "2. Проверьте сомнительные фоторафии в папке \"check\" и \"bad\"\n" +
-                "3. Вырежте вручную неудачные фотографии\n" +
-                "4. Перенесите готовые фотографии в корень папки \"temp\""
+                        "2. Проверьте сомнительные фоторафии в папке \"check\" и \"bad\"\n" +
+                        "3. Вырежте вручную неудачные фотографии\n" +
+                        "4. Перенесите готовые фотографии в корень папки \"temp\""
         );
 
         File[] badFiles;

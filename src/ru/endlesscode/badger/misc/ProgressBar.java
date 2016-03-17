@@ -38,7 +38,8 @@ public class ProgressBar extends Thread {
 
                 sleep(100);
             }
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
     }
 
     public void pause(String message) {

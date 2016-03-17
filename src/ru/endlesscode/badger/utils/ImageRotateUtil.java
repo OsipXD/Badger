@@ -19,7 +19,7 @@ import java.io.IOException;
 
 public class ImageRotateUtil {
     @Nullable
-    public static ImageInformation readImageInformation(File imageFile) throws IOException, MetadataException, ImageProcessingException {
+    private static ImageInformation readImageInformation(File imageFile) throws IOException, MetadataException, ImageProcessingException {
         Metadata metadata = ImageMetadataReader.readMetadata(imageFile);
         if (!metadata.containsDirectoryOfType(ExifIFD0Directory.class)) {
             return null;
@@ -43,7 +43,7 @@ public class ImageRotateUtil {
         return new ImageInformation(orientation, width, height);
     }
 
-    public static AffineTransform getExifTransformation(ImageInformation info) {
+    private static AffineTransform getExifTransformation(ImageInformation info) {
         AffineTransform t = new AffineTransform();
 
         switch (info.orientation) {
@@ -106,7 +106,7 @@ public class ImageRotateUtil {
         return transformImage(image, getExifTransformation(info));
     }
 
-    public static BufferedImage transformImage(BufferedImage image, AffineTransform transform) {
+    private static BufferedImage transformImage(BufferedImage image, AffineTransform transform) {
         AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BICUBIC);
 
         Rectangle bounds = op.getBounds2D(image).getBounds();

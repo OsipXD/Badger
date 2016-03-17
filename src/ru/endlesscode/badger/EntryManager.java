@@ -1,6 +1,7 @@
 package ru.endlesscode.badger;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.Scanner;
  */
 public class EntryManager {
     private final String inputFile;
-    private List<Entry> entryList = new ArrayList<>();
+    private final List<Entry> entryList = new ArrayList<>();
 
     public EntryManager(String inputFile) {
         this.inputFile = inputFile;
@@ -21,7 +22,8 @@ public class EntryManager {
     }
 
     public void parse() {
-        try(Scanner in = new Scanner(new File("Badger", this.inputFile))) {
+        entryList.clear();
+        try (Scanner in = new Scanner(new FileInputStream(new File("Badger", this.inputFile)))) {
             String line;
             while (in.hasNextLine()) {
                 try {

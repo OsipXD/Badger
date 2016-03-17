@@ -5,7 +5,8 @@ package ru.endlesscode.badger.face;
  * It is part of the Badger.
  * All rights reserved 2014 - 2015 © «EndlessCode Group»
  */
-public class FaceNotFoundException extends Exception {
+@SuppressWarnings("unused")
+class FaceNotFoundException extends Exception {
     public FaceNotFoundException() {
         super();
     }

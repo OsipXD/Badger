@@ -46,9 +46,9 @@ public class Face {
         }
 
         // Создаем уменьшенное временное изображение для отправки на распознание лица
-        File tempDir = new File("temp/");
+        File tempDir = new File("Badger/temp/");
         File tempFile = new File(tempDir, Utils.generateRandomString(16) + ".jpg");
-        if (!tempDir.exists() && !tempDir.mkdir()) {
+        if (!tempDir.exists() && !tempDir.mkdirs()) {
             throw new IOException("Не удалось создать папку \"" + tempDir.toString() + "\"");
         }
 
@@ -62,6 +62,7 @@ public class Face {
                 .asJson()
         );
 
+        //noinspection ResultOfMethodCallIgnored
         tempFile.delete();
         if (face == null) {
             throw new FaceNotFoundException("Фотография \"" + file.toString() + "\" не распознана");
@@ -95,14 +96,6 @@ public class Face {
 
         this.pointX = pointX;
         this.pointY = pointY;
-    }
-
-    public void drawFaceBorder() {
-        Graphics2D g = (Graphics2D) image.getGraphics();
-        g.setColor(new Color(255, 255, 255, 255));
-        g.draw(new Rectangle(this.x, this.y, this.width, this.height));
-        g.drawLine(pointX, pointY, pointX, pointY);
-        g.dispose();
     }
 
     public BufferedImage getImage() {

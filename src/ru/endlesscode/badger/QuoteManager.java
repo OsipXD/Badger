@@ -1,6 +1,7 @@
 package ru.endlesscode.badger;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.Scanner;
  */
 public class QuoteManager {
     private final String fileName;
-    private List<String> quoteList = new ArrayList<>();
+    private final List<String> quoteList = new ArrayList<>();
 
     public QuoteManager(String fileName) {
         this.fileName = fileName;
@@ -22,7 +23,7 @@ public class QuoteManager {
     }
 
     private void parse() {
-        try(Scanner in = new Scanner(new File("Badger", this.fileName))) {
+        try (Scanner in = new Scanner(new FileInputStream(new File("Badger", this.fileName)))) {
             String line;
             String quote = "";
             while (in.hasNextLine()) {
@@ -56,6 +57,10 @@ public class QuoteManager {
     }
 
     public String getRandomQuote() {
+        if (this.quoteList.size() == 0) {
+            return "Нет ни одной цитаты в списке :(";
+        }
+
         return this.quoteList.get(new Random().nextInt(this.quoteList.size() - 1));
     }
 }

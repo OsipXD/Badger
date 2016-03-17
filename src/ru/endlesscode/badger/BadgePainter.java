@@ -25,15 +25,15 @@ import java.util.List;
  * It is part of the Badger.
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
-public class BadgePainter {
-    public static void drawBadge(Entry entry) throws IOException {
-        BufferedImage pattern = ImageIO.read(new File("Badger/res/images", entry.getType().name() + ".png"));
+class BadgePainter {
+    private static void drawBadge(Entry entry) throws IOException {
+        BufferedImage pattern = ImageIO.read(new File("Badger/res/images", entry.getType().name().toLowerCase() + ".png"));
         Graphics2D g2d = pattern.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         Rectangle addInfoArea = null;
         Rectangle nameArea;
-        int nameAreaHeight = (int)(Config.TEXT_AREA_HEIGHT * 0.7);
+        int nameAreaHeight = (int) (Config.TEXT_AREA_HEIGHT * 0.7);
 
         if (entry.hasAddInfo()) {
             int addInfoHeight = nameAreaHeight / 4;
@@ -181,7 +181,7 @@ public class BadgePainter {
 
         int surnameX = nameArea.x + (nameArea.width - surnameWidth) / 2;
         int surnameY = nameArea.y + nameArea.height - (nameArea.height - nameHeight - surnameHeight + surnameAscent) / 2 + surnameAscent / 4;
-        int nameX = nameArea.x + (nameArea.width - nameWidth) / 2 ;
+        int nameX = nameArea.x + (nameArea.width - nameWidth) / 2;
         int nameY = surnameY - surnameHeight - surnameAscent / 4;
 
         g.setFont(surnameFont);
@@ -215,7 +215,7 @@ public class BadgePainter {
         FontMetrics metrics;
         Font font = new Font(fontName, Font.PLAIN, lowSize);
 
-        while(true) {
+        while (true) {
             Font tempFont = font.deriveFont(fontSize);
             metrics = g.getFontMetrics(tempFont);
 
@@ -281,7 +281,7 @@ public class BadgePainter {
             try {
                 ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, fontFile));
                 counter++;
-            } catch (IOException|FontFormatException e) {
+            } catch (IOException | FontFormatException e) {
                 System.out.println("Ошибка при загрузке шрифта \"" + fontFile.getName() + "\": " + e.getMessage());
             }
         }
@@ -370,7 +370,7 @@ public class BadgePainter {
         progressBar.pause("Бейджи сформированы в листы на печать (" + timer.stop() + " s)");
         System.out.println(
                 "Всё готово!\n" +
-                "Распечатайте файлы из папки \"result\""
+                        "Распечатайте файлы из папки \"result\""
         );
         Badger.waitEnter();
     }

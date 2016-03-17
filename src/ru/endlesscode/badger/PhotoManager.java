@@ -23,10 +23,8 @@ import java.util.List;
  */
 public class PhotoManager implements ThreadCompleteListener {
     private final String photoDir;
-
-    private int threadNum = 0;
     private final List<Thread> threads = new ArrayList<>();
-
+    private int threadNum = 0;
     private ProgressBar progressBar;
 
     public PhotoManager(String photoDir) {
@@ -72,7 +70,6 @@ public class PhotoManager implements ThreadCompleteListener {
 
                 try {
                     Face face = new Face(file);
-//                    face.drawFaceBorder();
                     ImageIO.write(face.getImage(), "jpg", new File("Badger/temp", (face.isDoubtful() ? "check/" + fileName + "_" : "") + name + ".jpg"));
                     Log.getLogger().info("Фотография обработана [" + file.getCanonicalPath() + "]");
                 } catch (Exception e) {
