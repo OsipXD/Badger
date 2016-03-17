@@ -25,6 +25,7 @@ public class EntryManager {
         entryList.clear();
         try (Scanner in = new Scanner(new FileInputStream(new File("Badger", this.inputFile)))) {
             String line;
+            int counter = 0;
             while (in.hasNextLine()) {
                 try {
                     line = in.nextLine();
@@ -69,7 +70,7 @@ public class EntryManager {
                         patronymic = splittedData[2];
                     }
 
-                    this.entryList.add(new Entry(surname, name, patronymic, type, addInfo, quote));
+                    this.entryList.add(new Entry(++counter, surname, name, patronymic, type, addInfo, quote));
                 } catch (IllegalArgumentException e) {
                     System.out.println(e.getMessage() + " - Строка будет пропущена!");
                 }

@@ -84,6 +84,10 @@ class Badger {
             System.out.println("Количество имен в списке (" + entryManager.getEntryList().size() + ") не совпадает с количеством фотографий в папке (" + photos.length + ")!");
             Badger.waitEnter();
             entryManager.parse();
+            photos = FileUtils.listOfImages(photosDir);
+            if (photos == null) {
+                photos = new File[0];
+            }
         }
 
         quoteManager = new QuoteManager("quotes.txt");
@@ -127,8 +131,8 @@ class Badger {
         File[] validFiles = FileUtils.listOfImages("Badger/temp");
         while (validFiles == null || validFiles.length != entryManager.getEntryList().size()) {
             System.out.println("Ошибка: количество фотографий в папке \"temp\" не соответствует количеству записанных людей");
-            validFiles = FileUtils.listOfImages("Badger/temp");
             Badger.waitEnter();
+            validFiles = FileUtils.listOfImages("Badger/temp");
         }
     }
 

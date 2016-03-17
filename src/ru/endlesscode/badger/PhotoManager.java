@@ -66,17 +66,15 @@ public class PhotoManager implements ThreadCompleteListener {
         NotifyingThread newThread = new NotifyingThread() {
             @Override
             public void doRun() {
-                String fileName = file.getName().substring(0, file.getName().lastIndexOf('.'));
-
                 try {
                     Face face = new Face(file);
-                    ImageIO.write(face.getImage(), "jpg", new File("Badger/temp", (face.isDoubtful() ? "check/" + fileName + "_" : "") + name + ".jpg"));
+                    ImageIO.write(face.getImage(), "jpg", new File("Badger/temp", (face.isDoubtful() ? "check/" : "") + name + ".jpg"));
                     Log.getLogger().info("Фотография обработана [" + file.getCanonicalPath() + "]");
                 } catch (Exception e) {
                     Log.getLogger().warning("PhotoManager#processPhoto(): " + e.getMessage());
 
                     try {
-                        Files.copy(file.toPath(), new File("Badger/temp/bad/" + fileName + "_" + name + ".jpg").toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(file.toPath(), new File("Badger/temp/bad/" + name + ".jpg").toPath(), StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }

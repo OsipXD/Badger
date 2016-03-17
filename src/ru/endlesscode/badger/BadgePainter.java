@@ -338,6 +338,7 @@ class BadgePainter {
                     int x = (Config.PAGE_WIDTH - badgePack.getWidth()) / 2;
                     int y = (Config.PAGE_HEIGHT - badgePack.getHeight()) / 2;
                     pageGraphics.drawImage(badgePack, x, y, null);
+                    drawCutLines(pageGraphics, new Rectangle(x, y, badgePack.getWidth(), badgePack.getHeight()));
                     pageGraphics.dispose();
                     ImageIO.write(page, "jpg", new File("Badger/result", "page" + pageCounter + ".jpg"));
 
@@ -372,6 +373,55 @@ class BadgePainter {
                 "Всё готово!\n" +
                         "Распечатайте файлы из папки \"result\""
         );
-        Badger.waitEnter();
+    }
+
+    private static void drawCutLines(Graphics2D g2d, Rectangle badgesRect) {
+        BasicStroke dashedLine = new BasicStroke(Config.PAGE_SPACE, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{4f, 0f, 2f}, 2f);
+
+        int space = 50;
+        int startX;
+        int startY;
+        int endX = 0;
+        int endY;
+
+        // Рисуем вертикальные линии
+        startY = badgesRect.y - space;
+        endY = startY + badgesRect.height + 2 * space;
+        for (int i = 0; i <= 3; i++) {
+            if (i == 0) {
+                startX = endX = badgesRect.x - (Config.PAGE_SPACE + 1) / 2;
+            } else {
+                startX = endX += Config.BADGE_HEIGHT + Config.PAGE_SPACE;
+            }
+
+            g2d.setColor(Color.DARK_GRAY);
+            g2d.setStroke(new BasicStroke(Config.PAGE_SPACE));
+            g2d.drawLine(startX, 0, endX, startY);
+            g2d.drawLine(startX, endY, endX, Config.PAGE_HEIGHT);
+
+            g2d.setColor(Color.LIGHT_GRAY);
+            g2d.setStroke(dashedLine);
+            g2d.drawLine(startX, startY, endX, endY);
+        }
+
+        // Рисуем горизонтальные линии
+        startX = badgesRect.x - space;
+        endX = startX + badgesRect.width + 2 * space;
+        for (int i = 0; i <= 3; i++) {
+            if (i == 0) {
+                startY = endY = badgesRect.y - (Config.PAGE_SPACE + 1) / 2;
+            } else {
+                startY = endY += Config.BADGE_WIDTH + Config.PAGE_SPACE;
+            }
+
+            g2d.setColor(Color.DARK_GRAY);
+            g2d.setStroke(new BasicStroke(Config.PAGE_SPACE));
+            g2d.drawLine(0, startY, startX, endY);
+            g2d.drawLine(endX, startY, Config.PAGE_WIDTH, endY);
+
+            g2d.setColor(Color.LIGHT_GRAY);
+            g2d.setStroke(dashedLine);
+            g2d.drawLine(startX, startY, endX, endY);
+        }
     }
 }

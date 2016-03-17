@@ -10,6 +10,8 @@ import org.jetbrains.annotations.Nullable;
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
 public class Entry {
+    private final int id;
+
     @Nullable
     private final String surname;
     private final String name;
@@ -22,8 +24,10 @@ public class Entry {
 
     private final EntryType type;
 
-    public Entry(@NotNull String surname, @Nullable String name, @Nullable String patronymic,
+    public Entry(int id, @NotNull String surname, @Nullable String name, @Nullable String patronymic,
                  @NotNull String type, @Nullable String addInfo, @Nullable String quote) {
+        this.id = id;
+
         if (name == null) {
             this.surname = null;
             this.name = surname;
@@ -58,8 +62,8 @@ public class Entry {
         if (this.hasPatronymic()) {
             fileName += "_" + this.patronymic;
         }
-
-        return fileName;
+        
+        return (this.id < 10 ? "0" : "") + this.id + "_" + fileName;
     }
 
     @Contract(pure = true)
