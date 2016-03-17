@@ -12,10 +12,16 @@ import java.util.Scanner;
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
 public class EntryManager {
+    private final String inputFile;
     private List<Entry> entryList = new ArrayList<>();
 
     public EntryManager(String inputFile) {
-        try(Scanner in = new Scanner(new File("Badger", inputFile))) {
+        this.inputFile = inputFile;
+        this.parse();
+    }
+
+    public void parse() {
+        try(Scanner in = new Scanner(new File("Badger", this.inputFile))) {
             String line;
             while (in.hasNextLine()) {
                 try {

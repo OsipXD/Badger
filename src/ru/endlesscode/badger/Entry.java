@@ -63,7 +63,7 @@ public class Entry {
     }
 
     @Contract(pure = true)
-    private boolean hasPatronymic() {
+    boolean hasPatronymic() {
         return this.patronymic != null;
     }
 

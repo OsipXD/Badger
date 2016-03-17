@@ -1,13 +1,17 @@
 package ru.endlesscode.badger;
 
 import ru.endlesscode.badger.misc.Config;
-import ru.endlesscode.badger.utils.Utils;
+import ru.endlesscode.badger.misc.Log;
+import ru.endlesscode.badger.misc.Timer;
+import ru.endlesscode.badger.utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Badger {
+
     private static EntryManager entryManager;
+    private static QuoteManager quoteManager;
 
     public static void main(String[] args) {
         // Первичная подготовка
@@ -18,47 +22,75 @@ public class Badger {
             return;
         }
 
-        entryManager = new EntryManager("input.txt");
-
         // Обработка фотографий
         processPhotos();
         BadgePainter.initFonts();
 
-        try {
-            BadgePainter.drawBadge(entryManager.getEntryList().get(2));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Сборка бейджиков
+        BadgePainter.drawAllBadges();
+
+        // Составление листов для печати
+        BadgePainter.packBadgesToPrint();
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void setupBadger() throws Exception {
-        File resultFolder = new File("Badger/result/confirmed");
-        File photosFolder = new File("Badger/photos");
+        new File("Badger/temp/bad").mkdirs();
+        new File("Badger/temp/badges").mkdirs();
+        new File("Badger/temp/check").mkdirs();
+        new File("Badger/res/fonts").mkdirs();
+        new File("Badger/result").mkdirs();
 
-        if (!resultFolder.exists()) {
-            resultFolder.mkdirs();
-        }
+        Log.init();
 
-        if (!photosFolder.exists()) {
-            photosFolder.mkdirs();
-        }
+        File photosDir = new File("Badger/photos");
+        photosDir.mkdirs();
+        File imagesDir = new File("Badger/res/images");
+        imagesDir.mkdirs();
 
         Config.loadConfig();
-        Utils.exportResource("input.txt");
+        if (!new File("Badger", "input.txt").exists()) {
+            FileUtils.exportResource("input.txt");
+        }
 
         System.out.println("Папка \"Badger\" подготовлена к работе.\n" +
                 "1. Закиньте фотографии в папку \"photos\"\n" +
                 "2. Внесите данные в файл \"input.txt\"\n" +
-                "3. Выставьте нужные настройки в файле \"badger.properties\""
+                "2. Внесите цитаты в файл \"quotes.txt\"\n" +
+                "4. Выставьте нужные настройки в файле \"badger.properties\"\n" +
+                "5. Поместите файлы оформления в папку \"res\""
         );
 
-        Badger.waitEnter();
-        //TODO: Проверка выполнения
+        boolean error = false;
+
+        do {
+            Badger.waitEnter();
+            for (Entry.EntryType type : Entry.EntryType.values()) {
+                File typeFile = new File(imagesDir, type.name() + ".png");
+                if (!typeFile.exists()) {
+                    System.out.println("Ошибка: файл \"" + typeFile.getAbsolutePath() + ".png" + "\" не найден!");
+                    error = true;
+                }
+            }
+        } while(error);
+
+        entryManager = new EntryManager("input.txt");
+        File[] photos = FileUtils.listOfImages(photosDir);
+        assert photos != null;
+        while(photos.length != entryManager.getEntryList().size()) {
+            System.out.println("Количество имен в списке (" + entryManager.getEntryList().size() + ") не совпадает с количеством фотографий в папке (" + photos.length + ")!");
+            Badger.waitEnter();
+            entryManager.parse();
+        }
+        quoteManager = new QuoteManager("quotes.txt");
+
+        Config.loadConfig();
     }
 
     public static void processPhotos() {
         PhotoManager photoManager = new PhotoManager("photos");
-        long start = System.nanoTime();
+        Timer timer = new Timer();
+        timer.start();
         boolean photosDone = photoManager.run();
         while (!photosDone) {
             Badger.waitEnter();
@@ -66,23 +98,44 @@ public class Badger {
         }
 
         photoManager.waitThreads();
+        photoManager.stopProgressBar("Фотографии вырезаны ("+ timer.stop() + " s)");
 
-        System.out.println("Фотографии вырезаны ("+ (System.nanoTime() - start) / 10000000 / 100. + " s)\n" +
+        System.out.println(
                 "1. Проверьте правильность вырезанных фотографий\n" +
                 "2. Проверьте сомнительные фоторафии в папке \"check\" и \"bad\"\n" +
                 "3. Вырежте вручную неудачные фотографии\n" +
-                "4. Перенесите удачные фотографии в папку \"confirmed\""
+                "4. Перенесите готовые фотографии в корень папки \"temp\""
         );
 
-        Badger.waitEnter();
+        File[] badFiles;
+        File[] checkFiles;
+        do {
+            Badger.waitEnter();
+            badFiles = FileUtils.listOfImages("Badger/temp/bad");
+            checkFiles = FileUtils.listOfImages("Badger/temp/check");
 
-        //TODO: Проверка выполнения
+            if ((badFiles == null || badFiles.length == 0) && (checkFiles == null || checkFiles.length == 0)) {
+                break;
+            }
+
+            System.out.println("Ошибка: по итогам человеческой обработки папки \"bad\" и \"check\" должны стать пустыми!");
+        } while (true);
+
+        File[] validFiles = FileUtils.listOfImages("Badger/temp");
+        while (validFiles == null || validFiles.length != entryManager.getEntryList().size()) {
+            System.out.println("Ошибка: количество фотографий в папке \"temp\" не соответствует количеству записанных людей");
+            validFiles = FileUtils.listOfImages("Badger/temp");
+            Badger.waitEnter();
+        }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void waitEnter() {
         System.out.println("[Нажмите Enter чтобы продолжить]");
         try {
-            //noinspection ResultOfMethodCallIgnored
+            for (int i = 0; i < System.in.available(); i++) {
+                System.in.read();
+            }
             System.in.read();
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,5 +144,9 @@ public class Badger {
 
     public static EntryManager getEntryManager() {
         return entryManager;
+    }
+
+    public static QuoteManager getQuoteManager() {
+        return quoteManager;
     }
 }

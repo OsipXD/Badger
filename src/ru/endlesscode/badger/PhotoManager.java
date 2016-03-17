@@ -1,12 +1,15 @@
 package ru.endlesscode.badger;
 
 import ru.endlesscode.badger.face.Face;
+import ru.endlesscode.badger.misc.Config;
+import ru.endlesscode.badger.misc.Log;
+import ru.endlesscode.badger.misc.ProgressBar;
 import ru.endlesscode.badger.thread.NotifyingThread;
 import ru.endlesscode.badger.thread.ThreadCompleteListener;
+import ru.endlesscode.badger.utils.FileUtils;
 
 import javax.imageio.ImageIO;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -19,12 +22,12 @@ import java.util.List;
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
 public class PhotoManager implements ThreadCompleteListener {
-    public static final int MAX_THREAD_NUM = 10;
-
     private final String photoDir;
 
     private int threadNum = 0;
     private final List<Thread> threads = new ArrayList<>();
+
+    private ProgressBar progressBar;
 
     public PhotoManager(String photoDir) {
         this.photoDir = photoDir;
@@ -34,29 +37,21 @@ public class PhotoManager implements ThreadCompleteListener {
         List<Entry> entryList = Badger.getEntryManager().getEntryList();
 
         File photosDir = new File("Badger", this.photoDir);
-        File[] files = photosDir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jpg") || name.endsWith(".JPG");
-            }
-        });
+        File[] files = FileUtils.listOfImages(photosDir);
 
-        if (files.length == 0) {
-            System.out.println("Папка фотографий пуста!");
+        if (files == null || files.length == 0) {
+            System.out.println("Папка фотографий не существует или пуста!");
             return false;
         }
 
-        if (entryList.size() != files.length) {
-            System.out.println("Количество имен в списке (" + entryList.size() + ") не совпадает с количеством файлов в папке (" + files.length + ")!");
-            return false;
-        }
-
+        progressBar = new ProgressBar("Обработка фотографий", files.length);
+        progressBar.start();
         for (int i = 0; i < files.length; i++) {
             final File file = files[i];
             final Entry entry = entryList.get(i);
 
             try {
-                while (this.threadNum >= MAX_THREAD_NUM) {
+                while (this.threadNum >= Config.MAX_THREAD_NUM) {
                     Thread.sleep(1000);
                 }
             } catch (InterruptedException e) {
@@ -69,7 +64,7 @@ public class PhotoManager implements ThreadCompleteListener {
         return true;
     }
 
-    public void processPhoto(final File file, final String name) {
+    private void processPhoto(final File file, final String name) {
         NotifyingThread newThread = new NotifyingThread() {
             @Override
             public void doRun() {
@@ -78,20 +73,19 @@ public class PhotoManager implements ThreadCompleteListener {
                 try {
                     Face face = new Face(file);
 //                    face.drawFaceBorder();
-                    //noinspection ResultOfMethodCallIgnored
-                    new File("Badger/result/check").mkdirs();
-                    ImageIO.write(face.getImage(), "jpg", new File("Badger/result", (face.isDoubtful() ? "check/" + fileName + "_" : "") + name + ".jpg"));
+                    ImageIO.write(face.getImage(), "jpg", new File("Badger/temp", (face.isDoubtful() ? "check/" + fileName + "_" : "") + name + ".jpg"));
+                    Log.getLogger().info("Фотография обработана [" + file.getCanonicalPath() + "]");
                 } catch (Exception e) {
-                    System.out.println("Ошибка обработки: " + e.getMessage());
+                    Log.getLogger().warning("PhotoManager#processPhoto(): " + e.getMessage());
 
                     try {
-                        //noinspection ResultOfMethodCallIgnored
-                        new File("Badger/result/bad").mkdirs();
-                        Files.copy(file.toPath(), new File("Badger/result/bad/" + fileName + "_" + name + ".jpg").toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(file.toPath(), new File("Badger/temp/bad/" + fileName + "_" + name + ".jpg").toPath(), StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
                 }
+
+                progressBar.increaseProgress();
             }
         };
 
@@ -120,5 +114,9 @@ public class PhotoManager implements ThreadCompleteListener {
             this.threads.remove(thread);
             this.threadNum--;
         }
+    }
+
+    public void stopProgressBar(String message) {
+        this.progressBar.pause(message);
     }
 }

@@ -30,9 +30,11 @@ public class ImageRotateUtil {
 
         int orientation = 1;
         try {
-            orientation = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+            if (directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
+                orientation = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+            }
         } catch (MetadataException e) {
-            System.out.print(e.getMessage());
+            System.out.println(e.getMessage());
         }
 
         int width = jpegDirectory.getImageWidth();
@@ -116,6 +118,30 @@ public class ImageRotateUtil {
         g.dispose();
 
         return destinationImage;
+    }
+
+    /**
+     * Rotates an image. Actually rotates a new copy of the image.
+     *
+     * @param image The image to be rotated
+     * @param angle The angle in degrees
+     * @return The rotated image
+     */
+    public static BufferedImage rotateImage(BufferedImage image, double angle) {
+        double sin = Math.abs(Math.sin(angle)), cos = Math.abs(Math.cos(angle));
+        int width = image.getWidth(), height = image.getHeight();
+        int newWidth = (int) Math.floor(width * cos + height * sin), newHeight = (int) Math.floor(height * cos + width * sin);
+
+        BufferedImage result = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = result.createGraphics();
+        g.setColor(Color.WHITE);
+        g.fill(new Rectangle(result.getWidth(), result.getHeight()));
+        g.translate((newWidth - width) / 2, (newHeight - height) / 2);
+        g.rotate(angle, width / 2, height / 2);
+        g.drawRenderedImage(image, null);
+        g.dispose();
+
+        return result;
     }
 
     public static class ImageInformation {

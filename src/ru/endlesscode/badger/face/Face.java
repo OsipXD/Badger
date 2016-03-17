@@ -7,6 +7,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import ru.endlesscode.badger.misc.Config;
 import ru.endlesscode.badger.utils.ImageRotateUtil;
 import ru.endlesscode.badger.utils.Utils;
 
@@ -22,13 +23,6 @@ import java.io.IOException;
  * All rights reserved 2014 - 2015 © «EndlessCode Group»
  */
 public class Face {
-    public static final int SEND_COMPRESSION = 3;
-    public static final float CRITICAL_WIDTH = 0.2f;
-    public static final float CRITICAL_HEIGHT = 0.3f;
-    public static final float PHOTO_WIDTH = 320;
-    public static final float PHOTO_HEIGHT = 490;
-    public static final float RATIO = PHOTO_WIDTH / PHOTO_HEIGHT;
-
     private final BufferedImage image;
     private final int x;
     private final int y;
@@ -40,15 +34,14 @@ public class Face {
     private boolean doubtful = false;
 
     public Face(File file) throws IOException, UnirestException, FaceNotFoundException, MetadataException, ImageProcessingException {
-        System.out.println("Обработка фотографии [" + file.toString() + "]");
         BufferedImage image = ImageRotateUtil.orientatedImage(file);
 
         // Проверяем соотношение сторон и обрезаем до нужного
-        if ((float) image.getWidth() / image.getHeight() > RATIO) {
-            int extraWidth = image.getWidth() - (int) (image.getHeight() * RATIO);
+        if ((float) image.getWidth() / image.getHeight() > Config.RATIO) {
+            int extraWidth = image.getWidth() - (int) (image.getHeight() * Config.RATIO);
             image = Utils.cropImage(image, new Rectangle(extraWidth / 2, 0, image.getWidth() - extraWidth, image.getHeight()));
-        } else if ((float) image.getWidth() / image.getHeight() < RATIO) {
-            int extraHeight = image.getHeight() - (int) (image.getWidth() / RATIO);
+        } else if ((float) image.getWidth() / image.getHeight() < Config.RATIO) {
+            int extraHeight = image.getHeight() - (int) (image.getWidth() / Config.RATIO);
             image = Utils.cropImage(image, new Rectangle(0, extraHeight / 2, image.getWidth(), image.getHeight() - extraHeight));
         }
 
@@ -59,7 +52,7 @@ public class Face {
             throw new IOException("Не удалось создать папку \"" + tempDir.toString() + "\"");
         }
 
-        ImageIO.write(Utils.resizeImage(image, 1.f / SEND_COMPRESSION), "jpg", tempFile);
+        ImageIO.write(Utils.resizeImage(image, 1.f / Config.SEND_COMPRESSION), "jpg", tempFile);
         this.image = image;
 
         JSONObject face = Utils.parseFaces(Unirest.post("https://apicloud-facerect.p.mashape.com/process-file.json")
@@ -74,10 +67,10 @@ public class Face {
             throw new FaceNotFoundException("Фотография \"" + file.toString() + "\" не распознана");
         }
 
-        this.x = face.getInt("x") * SEND_COMPRESSION;
-        this.y = face.getInt("y") * SEND_COMPRESSION;
-        this.width = face.getInt("width") * SEND_COMPRESSION;
-        this.height = face.getInt("height") * SEND_COMPRESSION;
+        this.x = face.getInt("x") * Config.SEND_COMPRESSION;
+        this.y = face.getInt("y") * Config.SEND_COMPRESSION;
+        this.width = face.getInt("width") * Config.SEND_COMPRESSION;
+        this.height = face.getInt("height") * Config.SEND_COMPRESSION;
 
         int pointX, pointY;
         try {
@@ -87,11 +80,11 @@ public class Face {
             JSONObject rightEye = eyes.getJSONObject(1);
 
             int eyesX = (leftEye.getInt("x") + leftEye.getInt("width") / 2
-                    + (rightEye.getInt("x") + rightEye.getInt("width") / 2)) * SEND_COMPRESSION / 2;
+                    + (rightEye.getInt("x") + rightEye.getInt("width") / 2)) * Config.SEND_COMPRESSION / 2;
             int eyesY = (leftEye.getInt("y") + leftEye.getInt("height") / 2
-                    + (rightEye.getInt("y") + rightEye.getInt("height") / 2)) * SEND_COMPRESSION / 2;
-            int noseX = (nose.getInt("x") + nose.getInt("width") / 2) * SEND_COMPRESSION;
-            int noseY = (nose.getInt("y") + nose.getInt("height") / 2) * SEND_COMPRESSION;
+                    + (rightEye.getInt("y") + rightEye.getInt("height") / 2)) * Config.SEND_COMPRESSION / 2;
+            int noseX = (nose.getInt("x") + nose.getInt("width") / 2) * Config.SEND_COMPRESSION;
+            int noseY = (nose.getInt("y") + nose.getInt("height") / 2) * Config.SEND_COMPRESSION;
 
             pointX = (eyesX + noseX) / 2;
             pointY = (eyesY + noseY) / 2;
@@ -122,28 +115,28 @@ public class Face {
             space = rightSpace;
         }
 
-        if (space < this.width * CRITICAL_WIDTH) {
+        if (space < this.width * Config.CRITICAL_WIDTH) {
             this.doubtful = true;
         }
 
         int width = this.width + 2 * space;
-        int height = (int) (width / RATIO);
+        int height = (int) (width / Config.RATIO);
         int x = this.x - space;
         int y = this.pointY - height / 2;
         if (y < 0) {
             y = 0;
-            if (this.y < this.height * CRITICAL_HEIGHT) {
+            if (this.y < this.height * Config.CRITICAL_HEIGHT) {
                 this.doubtful = true;
             }
         } else if (y + height > this.image.getHeight()) {
             y = this.image.getHeight() - height;
-            if (y + height - (this.y + this.height) < this.height * CRITICAL_HEIGHT) {
+            if (y + height - (this.y + this.height) < this.height * Config.CRITICAL_HEIGHT) {
                 this.doubtful = true;
             }
         }
 
         BufferedImage image = Utils.cropImage(this.image, new Rectangle(x, y, width, height));
-        return Utils.resizeImage(image, PHOTO_WIDTH / width);
+        return Utils.resizeImage(image, Config.PHOTO_WIDTH / width);
     }
 
     public boolean isDoubtful() {
