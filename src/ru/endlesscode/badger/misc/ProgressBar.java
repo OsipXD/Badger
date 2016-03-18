@@ -8,12 +8,14 @@ package ru.endlesscode.badger.misc;
 public class ProgressBar extends Thread {
     private final String message;
     private final float maxProgress;
+    private final int size;
     volatile private int progress;
 
     public ProgressBar(String message, int maxProgress) {
         this.message = message;
         this.maxProgress = maxProgress;
         this.progress = 0;
+        this.size = message.length() + 27;
     }
 
     public void increaseProgress() {
@@ -44,6 +46,10 @@ public class ProgressBar extends Thread {
 
     public void pause(String message) {
         this.interrupt();
-        System.out.println("\r" + message);
+        System.out.print("\r" + message);
+        for (int i = message.length(); i <= this.size; i++) {
+            System.out.print(" ");
+        }
+        System.out.println();
     }
 }
