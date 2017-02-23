@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by OsipXD on 14.03.2016
- * It is part of the Badger.
+ * It is part of the BadgerConsole.
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
 public class Entry {

@@ -1,12 +1,38 @@
 group 'ru.endlesscode'
 version '1.0'
 
-apply plugin: 'java'
+apply from: 'http://dl.bintray.com/content/shemnon/javafx-gradle/8.1.1/javafx.plugin'
+apply plugin: 'idea'
 
 sourceCompatibility = targetCompatibility = 1.7
 
 repositories {
     mavenCentral()
+}
+
+// Configures plugin
+javafx {
+    appID 'Badger'
+    appName 'Badger'
+    mainClass 'ru.endlesscode.badger.Badger'
+
+    // JVM arguments, system properties, application command line arguments
+    jvmArgs = ['-XX:+AggressiveOpts', '-XX:CompileThreshold=1']
+    systemProperties = ['prism.disableRegionCaching':'true']
+    arguments = ['-l', '--fast']
+
+//    releaseKey {
+//        alias = 'release'
+//        keyPass = getProjectProperty('keyStorePassword')
+//        keyStore = file("${System.properties['user.home']}/keystore/keystore.jks")
+//        storePass = getProjectProperty('storePassword')
+//    }
+
+    signingMode 'release'
+}
+
+String getProjectProperty(String propertyName) {
+    project.hasProperty(propertyName) ? project.property(propertyName) : null
 }
 
 dependencies {

@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 /**
  * Created by OsipXD on 14.03.2016
- * It is part of the Badger.
+ * It is part of the BadgerConsole.
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
 public class EntryManager {
@@ -23,7 +23,7 @@ public class EntryManager {
 
     public void parse() {
         entryList.clear();
-        try (Scanner in = new Scanner(new FileInputStream(new File("Badger", this.inputFile)))) {
+        try (Scanner in = new Scanner(new FileInputStream(new File("BadgerConsole", this.inputFile)))) {
             String line;
             int counter = 0;
             while (in.hasNextLine()) {

@@ -22,12 +22,12 @@ import java.util.List;
 
 /**
  * Created by OsipXD on 14.03.2016
- * It is part of the Badger.
+ * It is part of the BadgerConsole.
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
 class BadgePainter {
     private static void drawBadge(Entry entry) throws IOException {
-        BufferedImage pattern = ImageIO.read(new File("Badger/res/images", entry.getType().name().toLowerCase() + ".png"));
+        BufferedImage pattern = ImageIO.read(new File("BadgerConsole/res/images", entry.getType().name().toLowerCase() + ".png"));
         Graphics2D g2d = pattern.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
@@ -53,12 +53,12 @@ class BadgePainter {
 
         Rectangle quoteArea = new Rectangle(Config.TEXT_AREA_X, nameArea.y + nameArea.height, Config.TEXT_AREA_WIDTH, Config.TEXT_AREA_Y + Config.TEXT_AREA_HEIGHT - nameArea.y - nameArea.height);
         drawQuote(g2d, quoteArea, entry);
-        File photoFile = new File("Badger/temp", entry.getFileName() + ".jpg");
+        File photoFile = new File("BadgerConsole/temp", entry.getFileName() + ".jpg");
         Image photo = ImageIO.read(photoFile);
         g2d.drawImage(photo, Config.PHOTO_X, Config.PHOTO_Y, null);
         g2d.dispose();
 
-        ImageIO.write(pattern, "png", new File("Badger/temp/badges", entry.getFileName() + ".png"));
+        ImageIO.write(pattern, "png", new File("BadgerConsole/temp/badges", entry.getFileName() + ".png"));
 //        photoFile.delete();
     }
 
@@ -67,7 +67,7 @@ class BadgePainter {
         if (entry.hasQuote()) {
             quote += entry.getQuote();
         } else {
-            quote += Badger.getQuoteManager().getRandomQuote();
+            quote += BadgerConsole.getQuoteManager().getRandomQuote();
         }
         quote += "\"";
 
@@ -255,7 +255,7 @@ class BadgePainter {
     }
 
     public static void initFonts() {
-        File fontFolder = new File("Badger/res/fonts");
+        File fontFolder = new File("BadgerConsole/res/fonts");
 
         System.out.println("Подгрузка пользовательских шрифтов...");
         if (!fontFolder.exists() || fontFolder.isFile()) {
@@ -289,7 +289,7 @@ class BadgePainter {
     }
 
     public static void drawAllBadges() {
-        List<Entry> entries = Badger.getEntryManager().getEntryList();
+        List<Entry> entries = BadgerConsole.getEntryManager().getEntryList();
         ProgressBar progressBar = new ProgressBar("Составление бейджиков", entries.size());
         progressBar.start();
 
@@ -308,11 +308,11 @@ class BadgePainter {
 
         progressBar.pause("Бейджи составлены (" + timer.stop() + " s)");
         System.out.println("Проверьте правильность их составления в папке \"temp/badges\" и исправьте при необходимости.");
-        Badger.waitEnter();
+        BadgerConsole.waitEnter();
     }
 
     public static void packBadgesToPrint() {
-        List<Entry> entries = Badger.getEntryManager().getEntryList();
+        List<Entry> entries = BadgerConsole.getEntryManager().getEntryList();
         ProgressBar progressBar = new ProgressBar("Сборка бейджей на печать", entries.size());
         progressBar.start();
         Timer timer = new Timer();
@@ -340,7 +340,7 @@ class BadgePainter {
                     pageGraphics.drawImage(badgePack, x, y, null);
                     drawCutLines(pageGraphics, new Rectangle(x, y, badgePack.getWidth(), badgePack.getHeight()));
                     pageGraphics.dispose();
-                    ImageIO.write(page, "jpg", new File("Badger/result", "page" + pageCounter + ".jpg"));
+                    ImageIO.write(page, "jpg", new File("BadgerConsole/result", "page" + pageCounter + ".jpg"));
 
                     if (i == entries.size()) {
                         break;
@@ -350,7 +350,7 @@ class BadgePainter {
                     counter = 0;
                 }
 
-                File badgeFile = new File("Badger/temp/badges", entries.get(i).getFileName() + ".png");
+                File badgeFile = new File("BadgerConsole/temp/badges", entries.get(i).getFileName() + ".png");
                 BufferedImage badgeImage = ImageIO.read(badgeFile);
                 badgeImage = ImageRotateUtil.rotateImage(badgeImage, Math.PI / 2);
                 int num = counter % 3;

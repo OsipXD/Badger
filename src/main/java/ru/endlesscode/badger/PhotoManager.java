@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * Created by OsipXD on 14.03.2016
- * It is part of the Badger.
+ * It is part of the BadgerConsole.
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
 public class PhotoManager implements ThreadCompleteListener {
@@ -32,9 +32,9 @@ public class PhotoManager implements ThreadCompleteListener {
     }
 
     public boolean run() {
-        List<Entry> entryList = Badger.getEntryManager().getEntryList();
+        List<Entry> entryList = BadgerConsole.getEntryManager().getEntryList();
 
-        File photosDir = new File("Badger", this.photoDir);
+        File photosDir = new File("BadgerConsole", this.photoDir);
         File[] files = FileUtils.listOfImages(photosDir);
 
         if (files == null || files.length == 0) {
@@ -68,13 +68,13 @@ public class PhotoManager implements ThreadCompleteListener {
             public void doRun() {
                 try {
                     Face face = new Face(file);
-                    ImageIO.write(face.getImage(), "jpg", new File("Badger/temp", (face.isDoubtful() ? "check/" : "") + name + ".jpg"));
+                    ImageIO.write(face.getImage(), "jpg", new File("BadgerConsole/temp", (face.isDoubtful() ? "check/" : "") + name + ".jpg"));
                     Log.getLogger().info("Фотография обработана [" + file.getCanonicalPath() + "]");
                 } catch (Exception e) {
                     Log.getLogger().warning("PhotoManager#processPhoto(): " + e.getMessage());
 
                     try {
-                        Files.copy(file.toPath(), new File("Badger/temp/bad/" + name + ".jpg").toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(file.toPath(), new File("BadgerConsole/temp/bad/" + name + ".jpg").toPath(), StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -87,7 +87,7 @@ public class PhotoManager implements ThreadCompleteListener {
         newThread.addListener(this);
         newThread.start();
 
-        synchronized (Badger.class) {
+        synchronized (BadgerConsole.class) {
             this.threads.add(newThread);
             this.threadNum++;
         }

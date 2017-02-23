@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 /**
  * Created by OsipXD on 17.03.2016
- * It is part of the Badger.
+ * It is part of the BadgerConsole.
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
 public class QuoteManager {
@@ -23,7 +23,7 @@ public class QuoteManager {
     }
 
     private void parse() {
-        try (Scanner in = new Scanner(new FileInputStream(new File("Badger", this.fileName)))) {
+        try (Scanner in = new Scanner(new FileInputStream(new File("BadgerConsole", this.fileName)))) {
             String line;
             String quote = "";
             while (in.hasNextLine()) {
