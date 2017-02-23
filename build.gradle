@@ -21,14 +21,15 @@ javafx {
     systemProperties = ['prism.disableRegionCaching':'true']
     arguments = ['-l', '--fast']
 
+    // TODO Add release and debug keys
 //    releaseKey {
 //        alias = 'release'
 //        keyPass = getProjectProperty('keyStorePassword')
 //        keyStore = file("${System.properties['user.home']}/keystore/keystore.jks")
 //        storePass = getProjectProperty('storePassword')
 //    }
-
-    signingMode 'release'
+//
+//    signingMode 'release'
 }
 
 String getProjectProperty(String propertyName) {
