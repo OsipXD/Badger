@@ -1,9 +1,9 @@
-package ru.endlesscode.badger;
+package ru.endlesscode.badger.old;
 
-import ru.endlesscode.badger.misc.Config;
-import ru.endlesscode.badger.misc.Log;
-import ru.endlesscode.badger.misc.Timer;
-import ru.endlesscode.badger.utils.FileUtils;
+import ru.endlesscode.badger.old.misc.Config;
+import ru.endlesscode.badger.old.misc.Log;
+import ru.endlesscode.badger.old.misc.Timer;
+import ru.endlesscode.badger.old.utils.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

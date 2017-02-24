@@ -1,4 +1,4 @@
-package ru.endlesscode.badger;
+package ru.endlesscode.badger.old;
 
 import java.io.File;
 import java.io.FileInputStream;

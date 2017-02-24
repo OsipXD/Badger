@@ -1,4 +1,4 @@
-package ru.endlesscode.badger.face;
+package ru.endlesscode.badger.old.face;
 
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.MetadataException;
@@ -7,9 +7,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import ru.endlesscode.badger.misc.Config;
-import ru.endlesscode.badger.utils.ImageRotateUtil;
-import ru.endlesscode.badger.utils.Utils;
+import ru.endlesscode.badger.old.misc.Config;
+import ru.endlesscode.badger.old.utils.ImageRotateUtil;
+import ru.endlesscode.badger.old.utils.Utils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

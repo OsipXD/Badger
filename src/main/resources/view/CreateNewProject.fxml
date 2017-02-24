@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="end" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" stylesheets="@../css/flat.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.endlesscode.badger.controller.CreatingController">
+   <Label layoutX="28.0" layoutY="14.0" text="Создание проекта">
+      <font>
+         <Font size="30.0" />
+      </font>
+   </Label>
+   <Separator layoutY="76.0" prefHeight="3.0" prefWidth="600.0" />
+    <TabPane layoutX="23.0" layoutY="88.0" prefHeight="341.0" prefWidth="557.0" tabClosingPolicy="UNAVAILABLE">
+        <Tab styleClass="start" text="Название">
+            <AnchorPane prefHeight="160.0" prefWidth="588.0">
+                <TextField fx:id="projectNameField" layoutX="135.0" layoutY="14.0" prefHeight="31.0" prefWidth="409.0"
+                           text="Untitled"/>
+                <Label layoutY="19.0" text="Название проекта:"/>
+                <Label layoutY="55.0" text="Путь к проекту:"/>
+                <TextField fx:id="projectPathField" layoutX="135.0" layoutY="50.0" prefHeight="31.0"
+                           prefWidth="372.0"/>
+                <Button ellipsisString="" layoutX="512.0" layoutY="49.0" mnemonicParsing="false"
+                        onAction="#browseProjectDirectory" prefHeight="31.0" prefWidth="32.0" text="..."/>
+                <CheckBox fx:id="createProjectFolder" layoutX="135.0" layoutY="90.0" mnemonicParsing="false"
+                          onAction="#onCreateProjectFolderChanged" selected="true" text="Создать папку для проекта"/>
+            </AnchorPane>
+        </Tab>
+      <Tab disable="true" text="Оформление" />
+        <Tab disable="true" styleClass="end" text="End Tab" />
+    </TabPane>
+   <Button fx:id="nextButton" disable="true" layoutX="496.0" layoutY="441.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="84.0" text="Далее" />
+</AnchorPane>

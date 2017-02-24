@@ -1,4 +1,4 @@
-package ru.endlesscode.badger.utils;
+package ru.endlesscode.badger.old.utils;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;

@@ -1,10 +1,10 @@
-package ru.endlesscode.badger;
+package ru.endlesscode.badger.old;
 
-import ru.endlesscode.badger.misc.Config;
-import ru.endlesscode.badger.misc.Log;
-import ru.endlesscode.badger.misc.ProgressBar;
-import ru.endlesscode.badger.misc.Timer;
-import ru.endlesscode.badger.utils.ImageRotateUtil;
+import ru.endlesscode.badger.old.misc.Config;
+import ru.endlesscode.badger.old.misc.Log;
+import ru.endlesscode.badger.old.misc.ProgressBar;
+import ru.endlesscode.badger.old.misc.Timer;
+import ru.endlesscode.badger.old.utils.ImageRotateUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

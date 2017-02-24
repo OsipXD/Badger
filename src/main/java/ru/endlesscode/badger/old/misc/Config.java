@@ -1,6 +1,6 @@
-package ru.endlesscode.badger.misc;
+package ru.endlesscode.badger.old.misc;
 
-import ru.endlesscode.badger.utils.FileUtils;
+import ru.endlesscode.badger.old.utils.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;

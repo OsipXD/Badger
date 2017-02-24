@@ -1,4 +1,4 @@
-package ru.endlesscode.badger.utils;
+package ru.endlesscode.badger.old.utils;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;

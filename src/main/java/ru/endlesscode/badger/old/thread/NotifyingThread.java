@@ -1,4 +1,4 @@
-package ru.endlesscode.badger.thread;
+package ru.endlesscode.badger.old.thread;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;

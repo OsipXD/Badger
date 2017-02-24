@@ -4,7 +4,7 @@ version '1.0'
 apply from: 'http://dl.bintray.com/content/shemnon/javafx-gradle/8.1.1/javafx.plugin'
 apply plugin: 'idea'
 
-sourceCompatibility = targetCompatibility = 1.7
+sourceCompatibility = targetCompatibility = 1.8
 
 repositories {
     mavenCentral()

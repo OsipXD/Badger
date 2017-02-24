@@ -1,4 +1,4 @@
-package ru.endlesscode.badger.thread;
+package ru.endlesscode.badger.old.thread;
 
 /**
  * Created by OsipXD on 10.12.2015

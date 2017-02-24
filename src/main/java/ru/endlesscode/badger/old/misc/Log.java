@@ -1,4 +1,4 @@
-package ru.endlesscode.badger.misc;
+package ru.endlesscode.badger.old.misc;
 
 import java.io.File;
 import java.io.IOException;

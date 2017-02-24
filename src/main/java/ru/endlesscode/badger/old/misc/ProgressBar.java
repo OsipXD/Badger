@@ -1,4 +1,4 @@
-package ru.endlesscode.badger.misc;
+package ru.endlesscode.badger.old.misc;
 
 /**
  * Created by OsipXD on 17.03.2016

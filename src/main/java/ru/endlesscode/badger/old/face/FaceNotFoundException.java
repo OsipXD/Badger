@@ -1,4 +1,4 @@
-package ru.endlesscode.badger.face;
+package ru.endlesscode.badger.old.face;
 
 /**
  * Created by OsipXD on 10.12.2015

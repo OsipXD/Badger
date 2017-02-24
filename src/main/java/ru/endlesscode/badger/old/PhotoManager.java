@@ -1,12 +1,12 @@
-package ru.endlesscode.badger;
+package ru.endlesscode.badger.old;
 
-import ru.endlesscode.badger.face.Face;
-import ru.endlesscode.badger.misc.Config;
-import ru.endlesscode.badger.misc.Log;
-import ru.endlesscode.badger.misc.ProgressBar;
-import ru.endlesscode.badger.thread.NotifyingThread;
-import ru.endlesscode.badger.thread.ThreadCompleteListener;
-import ru.endlesscode.badger.utils.FileUtils;
+import ru.endlesscode.badger.old.face.Face;
+import ru.endlesscode.badger.old.misc.Config;
+import ru.endlesscode.badger.old.misc.Log;
+import ru.endlesscode.badger.old.misc.ProgressBar;
+import ru.endlesscode.badger.old.thread.NotifyingThread;
+import ru.endlesscode.badger.old.thread.ThreadCompleteListener;
+import ru.endlesscode.badger.old.utils.FileUtils;
 
 import javax.imageio.ImageIO;
 import java.io.File;
