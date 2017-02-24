@@ -49,26 +49,30 @@ public class Badger extends Application {
         }
     }
 
-    public static boolean openCreateDirDialog(String message, File path) {
-        message = String.format(message, path.getAbsolutePath());
+    public static boolean openProjectExistsDialog(File path) {
+        String message = String.format("Папка \'%s\' не пуста, вы уверены, что хотите продолжить " +
+                                       "(всё содержимое папки будет удалено)?", path.getAbsolutePath());
+        return showWarning("Папка не пуста", message);
+    }
 
+    public static boolean openCreateDirDialog(File path) {
+        String message = String.format("Каталог \'%s\' не найден. Хотите создать его?", path.getAbsolutePath());
+        return showWarning("Каталог не найден", message);
+    }
+
+    private static boolean showWarning(String header, String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING, message, ButtonType.YES, ButtonType.NO);
-        alert.setHeaderText("Каталог не найден");
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.initOwner(getPrimaryStage());
+        Optional<ButtonType> result = showAlert(alert, header);
 
-        Optional<ButtonType> result = alert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.YES;
     }
 
-    public static void showAlert(Alert.AlertType type, String header, String content) {
-        Alert alert = new Alert(type);
+    public static Optional<ButtonType> showAlert(Alert alert, String header) {
         alert.setHeaderText(header);
-        alert.setContentText(content);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.initOwner(getPrimaryStage());
 
-        alert.showAndWait();
+        return alert.showAndWait();
     }
 
     private void replaceSceneContent(String viewName) throws IOException {

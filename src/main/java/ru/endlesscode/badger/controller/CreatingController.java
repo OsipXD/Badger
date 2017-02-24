@@ -1,14 +1,9 @@
 package ru.endlesscode.badger.controller;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.DirectoryChooser;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +11,8 @@ import ru.endlesscode.badger.Badger;
 import ru.endlesscode.badger.util.FileUtil;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class CreatingController {
     @FXML
@@ -26,6 +23,8 @@ public class CreatingController {
     public CheckBox createProjectFolder;
     @FXML
     public Button nextButton;
+    @FXML
+    public TabPane stepTabs;
 
     private final DirectoryChooser directoryChooser;
 
@@ -68,7 +67,10 @@ public class CreatingController {
                 trimTextField(projectNameField);
             }
         });
-        projectNameField.textProperty().addListener((observable, oldValue, newValue) -> setProjectPath(projectPath));
+        projectNameField.textProperty().addListener((observable, oldValue, newValue) -> {
+            setProjectPath(projectPath);
+            nextButton.setDisable(newValue.trim().isEmpty());
+        });
         projectPathField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 trimTextField(projectPathField);
@@ -107,7 +109,7 @@ public class CreatingController {
 
     @Nullable
     private File chooseDirectory() {
-        boolean pathBuilt = FileUtil.buildDirectory(projectPath);
+        boolean pathBuilt = FileUtil.requestDirectoryBuilding(projectPath);
         return pathBuilt ? directoryChooser.showDialog(Badger.getPrimaryStage()) : null;
     }
 
@@ -148,5 +150,74 @@ public class CreatingController {
         projectPath = projectPath.replaceAll(FileUtil.getQuotedSeparator() + "$", "");
 
         return projectPath.trim();
+    }
+
+    public void onNextClicked(ActionEvent actionEvent) {
+        Step currentStep = getCurrentStep();
+        switch (currentStep) {
+            case NAME:
+                boolean projectCreated = buildProjectDir();
+                if (!projectCreated) {
+                    return;
+                }
+                break;
+        }
+
+        gotoNextTab();
+    }
+
+    private boolean buildProjectDir() {
+        boolean result = FileUtil.requestDirectoryBuilding(projectPath);
+        if (!result) {
+            return false;
+        }
+
+        File projectDir = new File(projectPathField.getText());
+
+        if (!projectDir.isDirectory()) {
+            result = FileUtil.buildDirectory(projectDir);
+        } else if (!FileUtil.directoryIsEmpty(projectDir)) {
+            boolean deleteFiles = Badger.openProjectExistsDialog(projectDir);
+            if (deleteFiles) {
+                tryToDeleteProjectDirContent(projectDir);
+            }
+        }
+
+        return result;
+    }
+
+    private void tryToDeleteProjectDirContent(File projectDir) {
+        try {
+            FileUtil.deleteDirectoryContent(projectDir);
+        } catch (IOException ignored) {}
+    }
+
+    private void gotoNextTab() {
+        List<Tab> tabs = stepTabs.getTabs();
+
+        int selectedTab = getSelectedTabId();
+        int nextTab = selectedTab + 1;
+        if (nextTab == tabs.size()) {
+            return;
+        }
+        if (nextTab + 1 == tabs.size()) {
+            nextButton.setText("Готово");
+        }
+
+        tabs.get(selectedTab).setDisable(true);
+        tabs.get(nextTab).setDisable(false);
+        stepTabs.getSelectionModel().select(nextTab);
+    }
+
+    private Step getCurrentStep() {
+        return Step.values()[getSelectedTabId()];
+    }
+
+    private int getSelectedTabId() {
+        return stepTabs.getSelectionModel().getSelectedIndex();
+    }
+
+    private enum Step {
+        NAME, DESIGN, END
     }
 }
