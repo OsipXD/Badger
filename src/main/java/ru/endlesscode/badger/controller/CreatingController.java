@@ -1,9 +1,10 @@
 package ru.endlesscode.badger.controller;
 
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.DirectoryChooser;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +13,6 @@ import ru.endlesscode.badger.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class CreatingController {
     @FXML
@@ -22,9 +22,7 @@ public class CreatingController {
     @FXML
     public CheckBox createProjectFolder;
     @FXML
-    public Button nextButton;
-    @FXML
-    public TabPane stepTabs;
+    public Button createProjectButton;
 
     private final DirectoryChooser directoryChooser;
 
@@ -69,7 +67,7 @@ public class CreatingController {
         });
         projectNameField.textProperty().addListener((observable, oldValue, newValue) -> {
             setProjectPath(projectPath);
-            nextButton.setDisable(newValue.trim().isEmpty());
+            createProjectButton.setDisable(newValue.trim().isEmpty());
         });
         projectPathField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
@@ -98,7 +96,7 @@ public class CreatingController {
         textField.setText(projectPath.trim());
     }
 
-    public void browseProjectDirectory(ActionEvent actionEvent) {
+    public void browseProjectDirectory() {
         directoryChooser.setInitialDirectory(new File(projectPathField.getText()).getParentFile());
 
         File chosenPath = chooseDirectory();
@@ -113,7 +111,7 @@ public class CreatingController {
         return pathBuilt ? directoryChooser.showDialog(Badger.getPrimaryStage()) : null;
     }
 
-    public void onCreateProjectFolderChanged(ActionEvent actionEvent) {
+    public void onCreateProjectFolderChanged() {
         setProjectPath(projectPath);
     }
 
@@ -152,18 +150,8 @@ public class CreatingController {
         return projectPath.trim();
     }
 
-    public void onNextClicked(ActionEvent actionEvent) {
-        Step currentStep = getCurrentStep();
-        switch (currentStep) {
-            case NAME:
-                boolean projectCreated = buildProjectDir();
-                if (!projectCreated) {
-                    return;
-                }
-                break;
-        }
-
-        gotoNextTab();
+    public void onCreateProjectButtonClicked() {
+        buildProjectDir();
     }
 
     private boolean buildProjectDir() {
@@ -190,34 +178,5 @@ public class CreatingController {
         try {
             FileUtil.deleteDirectoryContent(projectDir);
         } catch (IOException ignored) {}
-    }
-
-    private void gotoNextTab() {
-        List<Tab> tabs = stepTabs.getTabs();
-
-        int selectedTab = getSelectedTabId();
-        int nextTab = selectedTab + 1;
-        if (nextTab == tabs.size()) {
-            return;
-        }
-        if (nextTab + 1 == tabs.size()) {
-            nextButton.setText("Готово");
-        }
-
-        tabs.get(selectedTab).setDisable(true);
-        tabs.get(nextTab).setDisable(false);
-        stepTabs.getSelectionModel().select(nextTab);
-    }
-
-    private Step getCurrentStep() {
-        return Step.values()[getSelectedTabId()];
-    }
-
-    private int getSelectedTabId() {
-        return stepTabs.getSelectionModel().getSelectedIndex();
-    }
-
-    private enum Step {
-        NAME, DESIGN, END
     }
 }
