@@ -69,7 +69,7 @@ public class Config {
         PHOTO_Y = Integer.parseInt(config.getProperty("photo.y", "80"));
         PHOTO_WIDTH = Integer.parseInt(config.getProperty("photo.width", "320"));
         PHOTO_HEIGHT = Integer.parseInt(config.getProperty("photo.height", "490"));
-        RATIO = PHOTO_WIDTH / PHOTO_HEIGHT;
+        RATIO = PHOTO_WIDTH/PHOTO_HEIGHT;
 
         CRITICAL_WIDTH = Float.parseFloat(config.getProperty("photo.critical.width", "0.2"));
         CRITICAL_HEIGHT = Float.parseFloat(config.getProperty("photo.critical.height", "0.3"));

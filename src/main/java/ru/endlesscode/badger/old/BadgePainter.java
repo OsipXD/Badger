@@ -33,10 +33,10 @@ class BadgePainter {
 
         Rectangle addInfoArea = null;
         Rectangle nameArea;
-        int nameAreaHeight = (int) (Config.TEXT_AREA_HEIGHT * 0.7);
+        int nameAreaHeight = (int) (Config.TEXT_AREA_HEIGHT*0.7);
 
         if (entry.hasAddInfo()) {
-            int addInfoHeight = nameAreaHeight / 4;
+            int addInfoHeight = nameAreaHeight/4;
             addInfoArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y, Config.TEXT_AREA_WIDTH, addInfoHeight);
             nameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y + addInfoHeight, Config.TEXT_AREA_WIDTH, nameAreaHeight - addInfoHeight);
         } else {
@@ -104,9 +104,9 @@ class BadgePainter {
                 lineCounter++;
             }
 
-            if (lineCounter * metrics.getHeight() > quoteArea.height || size > Config.QUOTE_MAX_SIZE) {
+            if (lineCounter*metrics.getHeight() > quoteArea.height || size > Config.QUOTE_MAX_SIZE) {
                 metrics = g2d.getFontMetrics(font);
-                height = lineCounter * metrics.getHeight();
+                height = lineCounter*metrics.getHeight();
                 size--;
                 break;
             }
@@ -123,13 +123,13 @@ class BadgePainter {
         LineBreakMeasurer lineMeasurer = new LineBreakMeasurer(paragraph, frc);
 
         float posX;
-        float posY = quoteArea.y + (quoteArea.height - height) / 2 + metrics.getHeight();
+        float posY = quoteArea.y + (quoteArea.height - height)/2 + metrics.getHeight();
         int pos;
         while ((pos = lineMeasurer.getPosition()) < paragraphEnd) {
             TextLayout layout;
             int index = quote.indexOf("\n", pos);
             layout = index > pos ? lineMeasurer.nextLayout(quoteArea.width, index, false) : lineMeasurer.nextLayout(quoteArea.width);
-            posX = quoteArea.x + (quoteArea.width - layout.getVisibleAdvance()) / 2;
+            posX = quoteArea.x + (quoteArea.width - layout.getVisibleAdvance())/2;
             layout.draw(g2d, posX, posY);
 
             posY += metrics.getHeight();
@@ -152,8 +152,8 @@ class BadgePainter {
         if (!entry.hasSurname()) {
             nameFont = getSizedFontFromHigh(g, nameArea.getSize(), name, nameFont.getFontName(), Config.NAME_MAX_SIZE);
             metrics = g.getFontMetrics(nameFont);
-            int x = nameArea.x + (nameArea.width - metrics.stringWidth(name)) / 2;
-            int y = nameArea.y + nameArea.height - (nameArea.height - metrics.getHeight() + metrics.getAscent()) / 2;
+            int x = nameArea.x + (nameArea.width - metrics.stringWidth(name))/2;
+            int y = nameArea.y + nameArea.height - (nameArea.height - metrics.getHeight() + metrics.getAscent())/2;
 
             g.setFont(nameFont);
             g.drawString(name, x, y);
@@ -179,10 +179,10 @@ class BadgePainter {
         nameHeight = metrics.getHeight();
         int nameWidth = metrics.stringWidth(name);
 
-        int surnameX = nameArea.x + (nameArea.width - surnameWidth) / 2;
-        int surnameY = nameArea.y + nameArea.height - (nameArea.height - nameHeight - surnameHeight + surnameAscent) / 2 + surnameAscent / 4;
-        int nameX = nameArea.x + (nameArea.width - nameWidth) / 2;
-        int nameY = surnameY - surnameHeight - surnameAscent / 4;
+        int surnameX = nameArea.x + (nameArea.width - surnameWidth)/2;
+        int surnameY = nameArea.y + nameArea.height - (nameArea.height - nameHeight - surnameHeight + surnameAscent)/2 + surnameAscent/4;
+        int nameX = nameArea.x + (nameArea.width - nameWidth)/2;
+        int nameY = surnameY - surnameHeight - surnameAscent/4;
 
         g.setFont(surnameFont);
         g.drawString(surname, surnameX, surnameY);
@@ -190,7 +190,7 @@ class BadgePainter {
         g.setFont(nameFont);
         g.drawString(name, nameX, nameY);
 
-        nameArea.setSize(nameArea.width, surnameY - nameArea.y + surnameAscent / 2);
+        nameArea.setSize(nameArea.width, surnameY - nameArea.y + surnameAscent/2);
     }
 
     private static void drawCentredText(Graphics g, Rectangle area, String text, String fontName, int startSize) {
@@ -202,8 +202,8 @@ class BadgePainter {
         height = metrics.getHeight();
         width = metrics.stringWidth(text);
 
-        int x = area.x + (area.width - width) / 2;
-        int y = area.y + area.height - (area.height - height + metrics.getAscent()) / 2;
+        int x = area.x + (area.width - width)/2;
+        int y = area.y + area.height - (area.height - height + metrics.getAscent())/2;
         g.setFont(font);
         g.drawString(text, x, y);
     }
@@ -321,7 +321,7 @@ class BadgePainter {
         int counter = 0;
         int pageCounter = 0;
         BufferedImage badgePack = new BufferedImage(
-                (Config.BADGE_HEIGHT + Config.PAGE_SPACE) * 3 - Config.PAGE_SPACE, (Config.BADGE_WIDTH + Config.PAGE_SPACE) * 3 - Config.PAGE_SPACE, BufferedImage.TYPE_INT_RGB);
+                (Config.BADGE_HEIGHT + Config.PAGE_SPACE)*3 - Config.PAGE_SPACE, (Config.BADGE_WIDTH + Config.PAGE_SPACE)*3 - Config.PAGE_SPACE, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = badgePack.createGraphics();
         g2d.setColor(Color.WHITE);
         g2d.fill(new Rectangle(badgePack.getWidth(), badgePack.getHeight()));
@@ -335,8 +335,8 @@ class BadgePainter {
                     pageGraphics.setColor(Color.WHITE);
                     pageGraphics.fill(new Rectangle(Config.PAGE_WIDTH, Config.PAGE_HEIGHT));
 
-                    int x = (Config.PAGE_WIDTH - badgePack.getWidth()) / 2;
-                    int y = (Config.PAGE_HEIGHT - badgePack.getHeight()) / 2;
+                    int x = (Config.PAGE_WIDTH - badgePack.getWidth())/2;
+                    int y = (Config.PAGE_HEIGHT - badgePack.getHeight())/2;
                     pageGraphics.drawImage(badgePack, x, y, null);
                     drawCutLines(pageGraphics, new Rectangle(x, y, badgePack.getWidth(), badgePack.getHeight()));
                     pageGraphics.dispose();
@@ -352,10 +352,10 @@ class BadgePainter {
 
                 File badgeFile = new File("BadgerConsole/temp/badges", entries.get(i).getFileName() + ".png");
                 BufferedImage badgeImage = ImageIO.read(badgeFile);
-                badgeImage = ImageRotateUtil.rotateImage(badgeImage, Math.PI / 2);
-                int num = counter % 3;
-                int row = counter / 3;
-                g2d.drawImage(badgeImage, (badgeImage.getWidth() + Config.PAGE_SPACE) * num, (badgeImage.getHeight() + Config.PAGE_SPACE) * row, null);
+                badgeImage = ImageRotateUtil.rotateImage(badgeImage, Math.PI/2);
+                int num = counter%3;
+                int row = counter/3;
+                g2d.drawImage(badgeImage, (badgeImage.getWidth() + Config.PAGE_SPACE)*num, (badgeImage.getHeight() + Config.PAGE_SPACE)*row, null);
 
                 counter++;
 //                badgeFile.delete();
@@ -386,10 +386,10 @@ class BadgePainter {
 
         // Рисуем вертикальные линии
         startY = badgesRect.y - space;
-        endY = startY + badgesRect.height + 2 * space;
+        endY = startY + badgesRect.height + 2*space;
         for (int i = 0; i <= 3; i++) {
             if (i == 0) {
-                startX = endX = badgesRect.x - (Config.PAGE_SPACE + 1) / 2;
+                startX = endX = badgesRect.x - (Config.PAGE_SPACE + 1)/2;
             } else {
                 startX = endX += Config.BADGE_HEIGHT + Config.PAGE_SPACE;
             }
@@ -406,10 +406,10 @@ class BadgePainter {
 
         // Рисуем горизонтальные линии
         startX = badgesRect.x - space;
-        endX = startX + badgesRect.width + 2 * space;
+        endX = startX + badgesRect.width + 2*space;
         for (int i = 0; i <= 3; i++) {
             if (i == 0) {
-                startY = endY = badgesRect.y - (Config.PAGE_SPACE + 1) / 2;
+                startY = endY = badgesRect.y - (Config.PAGE_SPACE + 1)/2;
             } else {
                 startY = endY += Config.BADGE_WIDTH + Config.PAGE_SPACE;
             }

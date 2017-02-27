@@ -62,7 +62,7 @@ public class Entry {
         if (this.hasPatronymic()) {
             fileName += "_" + this.patronymic;
         }
-        
+
         return (this.id < 10 ? "0" : "") + this.id + "_" + fileName;
     }
 

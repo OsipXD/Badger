@@ -45,8 +45,8 @@ public class Utils {
     }
 
     public static BufferedImage resizeImage(BufferedImage img, float scale) {
-        int scaledWidth = (int) (img.getWidth() * scale);
-        int scaledHeight = (int) (img.getHeight() * scale);
+        int scaledWidth = (int) (img.getWidth()*scale);
+        int scaledHeight = (int) (img.getHeight()*scale);
         Image tmp = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
         BufferedImage resizedImg = new BufferedImage(scaledWidth, scaledHeight, img.getType());
 
@@ -72,7 +72,7 @@ public class Utils {
         // 2. Определенное лицо занимает слишком мало места на фотографии (тот неловкий момент, когда стена больше похожа на лицо чем ты :с)
         for (int i = faces.length() - 1; i >= 0; i--) {
             JSONObject face = faces.getJSONObject(i);
-            if (!face.getString("orientation").equals("frontal") || face.getInt("width") < width * 0.25) {
+            if (!face.getString("orientation").equals("frontal") || face.getInt("width") < width*0.25) {
                 faces.remove(i);
             }
         }
@@ -85,7 +85,7 @@ public class Utils {
         int mainFace = 0, maxArea = 0;
         for (int i = 0; i < faces.length(); i++) {
             JSONObject face = faces.getJSONObject(i);
-            int area = face.getInt("width") * face.getInt("height");
+            int area = face.getInt("width")*face.getInt("height");
             if (area > maxArea) {
                 mainFace = i;
                 maxArea = area;

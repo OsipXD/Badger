@@ -23,24 +23,6 @@ public class Badger extends Application {
         launch(args);
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        instance = this;
-
-        stage = primaryStage;
-        stage.setTitle("Badger");
-        gotoStart();
-        stage.show();
-    }
-
-    private void gotoStart() {
-        try {
-            replaceSceneContent("Start");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void gotoCreatingNew() {
         try {
             instance.replaceSceneContent("CreateNewProject");
@@ -51,7 +33,7 @@ public class Badger extends Application {
 
     public static boolean openProjectExistsDialog(File path) {
         String message = String.format("Папка \'%s\' не пуста, вы уверены, что хотите продолжить " +
-                                       "(всё содержимое папки будет удалено)?", path.getAbsolutePath());
+                "(всё содержимое папки будет удалено)?", path.getAbsolutePath());
         return showWarning("Папка не пуста", message);
     }
 
@@ -75,12 +57,6 @@ public class Badger extends Application {
         return alert.showAndWait();
     }
 
-    private void replaceSceneContent(String viewName) throws IOException {
-        Scene scene = new Scene(loadViewFromFXML(viewName));
-        stage.setScene(scene);
-        stage.sizeToScene();
-    }
-
     private static Parent loadViewFromFXML(String viewName) throws IOException {
         viewName = "/view/" + viewName + ".fxml";
 
@@ -91,5 +67,29 @@ public class Badger extends Application {
     @Contract(pure = true)
     public static Stage getPrimaryStage() {
         return instance.stage;
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        instance = this;
+
+        stage = primaryStage;
+        stage.setTitle("Badger");
+        gotoStart();
+        stage.show();
+    }
+
+    private void gotoStart() {
+        try {
+            replaceSceneContent("Start");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void replaceSceneContent(String viewName) throws IOException {
+        Scene scene = new Scene(loadViewFromFXML(viewName));
+        stage.setScene(scene);
+        stage.sizeToScene();
     }
 }

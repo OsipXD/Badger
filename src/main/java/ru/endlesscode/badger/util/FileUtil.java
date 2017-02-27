@@ -60,4 +60,21 @@ public class FileUtil {
 
         Files.delete(file.toPath());
     }
+
+    public static String trimDirectoryName(String name) {
+        // Remove all first numbers
+        while (!name.isEmpty() && Character.isDigit(name.charAt(0))) {
+            name = name.substring(1);
+        }
+
+        // Removing all spaces
+        return name.replaceAll("\\s", "").trim();
+    }
+
+    public static String trimPath(String path) {
+        path = path.replaceAll(FileUtil.getQuotedSeparator() + "{2,}", FileUtil.getQuotedSeparator());
+        path = path.replaceAll(FileUtil.getQuotedSeparator() + "$", "");
+
+        return path.trim();
+    }
 }

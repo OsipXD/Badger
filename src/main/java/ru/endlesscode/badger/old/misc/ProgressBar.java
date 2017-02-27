@@ -28,12 +28,12 @@ public class ProgressBar extends Thread {
         try {
             while (!isInterrupted()) {
                 if (progress != this.progress) {
-                    float percent = this.progress / this.maxProgress;
+                    float percent = this.progress/this.maxProgress;
                     String out = message + " [";
                     for (int i = 0; i < 20; i++) {
-                        out += i < 20 * percent ? "#" : " ";
+                        out += i < 20*percent ? "#" : " ";
                     }
-                    out += "] " + (int) (percent * 100) + "%";
+                    out += "] " + (int) (percent*100) + "%";
                     System.out.print("\r" + out);
                     progress = this.progress;
                 }

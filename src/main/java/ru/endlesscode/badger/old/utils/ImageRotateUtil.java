@@ -62,22 +62,22 @@ public class ImageRotateUtil {
                 t.translate(0, -info.height);
                 break;
             case 5: // - PI/2 and Flip X
-                t.rotate(-Math.PI / 2);
+                t.rotate(-Math.PI/2);
                 t.scale(-1.0, 1.0);
                 break;
             case 6: // -PI/2 and -width
                 t.translate(info.height, 0);
-                t.rotate(Math.PI / 2);
+                t.rotate(Math.PI/2);
                 break;
             case 7: // PI/2 and Flip
                 t.scale(-1.0, 1.0);
                 t.translate(-info.height, 0);
                 t.translate(0, info.width);
-                t.rotate(3 * Math.PI / 2);
+                t.rotate(3*Math.PI/2);
                 break;
             case 8: // PI / 2
                 t.translate(0, info.width);
-                t.rotate(3 * Math.PI / 2);
+                t.rotate(3*Math.PI/2);
                 break;
         }
 
@@ -95,11 +95,11 @@ public class ImageRotateUtil {
         // Resize image
         if (info.orientation <= 4) {
             if (image.getHeight() > 1024) {
-                image = Utils.resizeImage(image, 1024.0f / image.getHeight());
+                image = Utils.resizeImage(image, 1024.0f/image.getHeight());
                 info.scale(image.getWidth(), image.getHeight());
             }
         } else if (image.getWidth() > 1024) {
-            image = Utils.resizeImage(image, 1024.0f / image.getWidth());
+            image = Utils.resizeImage(image, 1024.0f/image.getWidth());
             info.scale(image.getWidth(), image.getHeight());
         }
 
@@ -130,14 +130,14 @@ public class ImageRotateUtil {
     public static BufferedImage rotateImage(BufferedImage image, double angle) {
         double sin = Math.abs(Math.sin(angle)), cos = Math.abs(Math.cos(angle));
         int width = image.getWidth(), height = image.getHeight();
-        int newWidth = (int) Math.floor(width * cos + height * sin), newHeight = (int) Math.floor(height * cos + width * sin);
+        int newWidth = (int) Math.floor(width*cos + height*sin), newHeight = (int) Math.floor(height*cos + width*sin);
 
         BufferedImage result = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = result.createGraphics();
         g.setColor(Color.WHITE);
         g.fill(new Rectangle(result.getWidth(), result.getHeight()));
-        g.translate((newWidth - width) / 2, (newHeight - height) / 2);
-        g.rotate(angle, width / 2, height / 2);
+        g.translate((newWidth - width)/2, (newHeight - height)/2);
+        g.rotate(angle, width/2, height/2);
         g.drawRenderedImage(image, null);
         g.dispose();
 

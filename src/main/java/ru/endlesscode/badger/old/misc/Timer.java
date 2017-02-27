@@ -13,6 +13,6 @@ public class Timer {
     }
 
     public double stop() {
-        return (System.nanoTime() - start) / 10000000 / 100.;
+        return (System.nanoTime() - start)/10000000/100.;
     }
 }

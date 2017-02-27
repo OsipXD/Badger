@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class CreatingController {
+    private final DirectoryChooser directoryChooser;
+
     @FXML
     public TextField projectPathField;
     @FXML
@@ -23,8 +25,6 @@ public class CreatingController {
     public CheckBox createProjectFolder;
     @FXML
     public Button createProjectButton;
-
-    private final DirectoryChooser directoryChooser;
 
     private String projectPath;
 
@@ -129,25 +129,11 @@ public class CreatingController {
     }
 
     private String trimmedProjectName() {
-        String projectName = projectNameField.getText();
-
-        // Remove all first numbers
-        while (!projectName.isEmpty() && Character.isDigit(projectName.charAt(0))) {
-            projectName = projectName.substring(1);
-        }
-
-        // Removing all spaces
-        return projectName.replaceAll("\\s", "").trim();
+        return FileUtil.trimDirectoryName(projectNameField.getText());
     }
 
     private String trimmedProjectPath() {
-        String projectPath = projectPathField.getText();
-
-        // Remove all bad separator chars
-        projectPath = projectPath.replaceAll(FileUtil.getQuotedSeparator() + "{2,}", FileUtil.getQuotedSeparator());
-        projectPath = projectPath.replaceAll(FileUtil.getQuotedSeparator() + "$", "");
-
-        return projectPath.trim();
+        return FileUtil.trimPath(projectPathField.getText());
     }
 
     public void onCreateProjectButtonClicked() {
@@ -155,12 +141,12 @@ public class CreatingController {
     }
 
     private boolean buildProjectDir() {
-        boolean result = FileUtil.requestDirectoryBuilding(projectPath);
+        File projectDir = new File(projectPathField.getText());
+
+        boolean result = FileUtil.requestDirectoryBuilding(projectDir.getParent());
         if (!result) {
             return false;
         }
-
-        File projectDir = new File(projectPathField.getText());
 
         if (!projectDir.isDirectory()) {
             result = FileUtil.buildDirectory(projectDir);
@@ -177,6 +163,7 @@ public class CreatingController {
     private void tryToDeleteProjectDirContent(File projectDir) {
         try {
             FileUtil.deleteDirectoryContent(projectDir);
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 }
