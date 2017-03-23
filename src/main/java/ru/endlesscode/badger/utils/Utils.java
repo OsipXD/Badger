@@ -95,4 +95,10 @@ public class Utils {
         return faces.getJSONObject(mainFace);
     }
 
+    public static Color colorFromHex(String hexString) {
+        return new Color(
+                Integer.valueOf(hexString.substring(1, 3), 16),
+                Integer.valueOf(hexString.substring(3, 5), 16),
+                Integer.valueOf(hexString.substring(5, 7), 16));
+    }
 }

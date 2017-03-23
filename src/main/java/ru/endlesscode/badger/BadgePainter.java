@@ -53,14 +53,15 @@ class BadgePainter {
         }
 
         if (entry.hasAddInfo()) {
-            g2d.setColor(Color.DARK_GRAY);
+            g2d.setColor(Config.INFO_COLOR);
             drawCentredText(g2d, addInfoArea, entry.getAddInfo(), Config.NAME_FONT, 25);
         }
 
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(Config.NAME_COLOR);
         drawName(g2d, nameArea, entry);
 
         Rectangle quoteArea = new Rectangle(Config.TEXT_AREA_X, nameArea.y + nameArea.height, Config.TEXT_AREA_WIDTH, Config.TEXT_AREA_Y + Config.TEXT_AREA_HEIGHT - nameArea.y - nameArea.height);
+        g2d.setColor(Config.QUOTE_COLOR);
         drawQuote(g2d, quoteArea, entry);
         g2d.dispose();
 

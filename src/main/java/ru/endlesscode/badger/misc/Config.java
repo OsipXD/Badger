@@ -1,7 +1,9 @@
 package ru.endlesscode.badger.misc;
 
 import ru.endlesscode.badger.utils.FileUtils;
+import ru.endlesscode.badger.utils.Utils;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
@@ -44,6 +46,10 @@ public class Config {
     public static float QUOTE_MIN_SIZE;
     public static float QUOTE_MAX_SIZE;
 
+    public static Color NAME_COLOR;
+    public static Color QUOTE_COLOR;
+    public static Color INFO_COLOR;
+
     public static void loadConfig() throws Exception {
         Properties config = new Properties();
         File configFile = new File("Badger", "badger.properties");
@@ -85,5 +91,9 @@ public class Config {
         QUOTE_FONT = config.getProperty("quote.font", "Arial");
         QUOTE_MIN_SIZE = Integer.parseInt(config.getProperty("quote.min", "50"));
         QUOTE_MAX_SIZE = Integer.parseInt(config.getProperty("quote.max", "80"));
+
+        NAME_COLOR = Utils.colorFromHex(config.getProperty("color.name", "#000000"));
+        QUOTE_COLOR = Utils.colorFromHex(config.getProperty("color.quote", "#000000"));
+        INFO_COLOR = Utils.colorFromHex(config.getProperty("color.info", "#000000"));
     }
 }
