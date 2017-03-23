@@ -50,6 +50,8 @@ public class Config {
     public static Color QUOTE_COLOR;
     public static Color INFO_COLOR;
 
+    public static boolean DEBUG;
+
     public static void loadConfig() throws Exception {
         Properties config = new Properties();
         File configFile = new File("Badger", "badger.properties");
@@ -95,5 +97,7 @@ public class Config {
         NAME_COLOR = Utils.colorFromHex(config.getProperty("color.name", "#000000"));
         QUOTE_COLOR = Utils.colorFromHex(config.getProperty("color.quote", "#000000"));
         INFO_COLOR = Utils.colorFromHex(config.getProperty("color.info", "#000000"));
+
+        DEBUG = Boolean.parseBoolean(config.getProperty("debug", "false"));
     }
 }
