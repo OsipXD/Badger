@@ -27,9 +27,18 @@ import java.util.List;
  */
 class BadgePainter {
     private static void drawBadge(Entry entry) throws IOException {
-        BufferedImage pattern = ImageIO.read(new File("Badger/res/images", entry.getType().name().toLowerCase() + ".png"));
-        Graphics2D g2d = pattern.createGraphics();
+//        BufferedImage pattern = ImageIO.read();
+        BufferedImage badge =  new BufferedImage(Config.BADGE_WIDTH, Config.BADGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = badge.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+        File photoFile = new File("Badger/temp", entry.getFileName() + ".jpg");
+        Image photo = ImageIO.read(photoFile);
+        g2d.drawImage(photo, Config.PHOTO_X, Config.PHOTO_Y, null);
+
+        File patternFile = new File("Badger/res/images", entry.getType().name().toLowerCase() + ".png");
+        Image pattern = ImageIO.read(patternFile);
+        g2d.drawImage(pattern, 0, 0, null);
 
         Rectangle addInfoArea = null;
         Rectangle nameArea;
@@ -53,13 +62,9 @@ class BadgePainter {
 
         Rectangle quoteArea = new Rectangle(Config.TEXT_AREA_X, nameArea.y + nameArea.height, Config.TEXT_AREA_WIDTH, Config.TEXT_AREA_Y + Config.TEXT_AREA_HEIGHT - nameArea.y - nameArea.height);
         drawQuote(g2d, quoteArea, entry);
-        File photoFile = new File("Badger/temp", entry.getFileName() + ".jpg");
-        Image photo = ImageIO.read(photoFile);
-        g2d.drawImage(photo, Config.PHOTO_X, Config.PHOTO_Y, null);
         g2d.dispose();
 
-        ImageIO.write(pattern, "png", new File("Badger/temp/badges", entry.getFileName() + ".png"));
-//        photoFile.delete();
+        ImageIO.write(badge, "png", new File("Badger/temp/badges", entry.getFileName() + ".png"));
     }
 
     private static void drawQuote(Graphics2D g2d, Rectangle quoteArea, Entry entry) {
