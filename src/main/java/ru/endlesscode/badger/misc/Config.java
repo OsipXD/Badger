@@ -46,12 +46,13 @@ public class Config {
     public static String QUOTE_FONT;
     public static float QUOTE_MIN_SIZE;
     public static float QUOTE_MAX_SIZE;
+
     public static int INFO_MAX_SIZE;
+    public static int INFO_SPACE;
 
     public static Color NAME_COLOR;
     public static Color QUOTE_COLOR;
     public static Color INFO_COLOR;
-
 
     public static boolean DEBUG;
 
@@ -100,6 +101,7 @@ public class Config {
         QUOTE_MAX_SIZE = Integer.parseInt(config.getProperty("quote.max", "80"));
 
         INFO_MAX_SIZE = Integer.parseInt(config.getProperty("info.max", "30"));
+        INFO_SPACE = Integer.parseInt(config.getProperty("info.space", "10"));
 
         NAME_COLOR = Utils.colorFromHex(config.getProperty("color.name", "#000000"));
         QUOTE_COLOR = Utils.colorFromHex(config.getProperty("color.quote", "#000000"));

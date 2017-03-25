@@ -69,8 +69,8 @@ class BadgePainter {
         if (entry.hasAddInfo()) {
             int addInfoHeight = nameAreaHeight / 4;
             addInfoArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y, Config.TEXT_AREA_WIDTH, addInfoHeight);
-            fullNameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y + addInfoHeight,
-                    Config.TEXT_AREA_WIDTH, nameAreaHeight - addInfoHeight);
+            fullNameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y + addInfoHeight + Config.INFO_SPACE,
+                    Config.TEXT_AREA_WIDTH, nameAreaHeight - addInfoHeight - Config.INFO_SPACE);
         } else {
             fullNameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y, Config.TEXT_AREA_WIDTH, nameAreaHeight);
         }

@@ -2,9 +2,7 @@ package ru.endlesscode.badger;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
 import java.awt.font.TextLayout;
-import java.awt.geom.Rectangle2D;
 
 /**
  * @author Osip Fatkullin
