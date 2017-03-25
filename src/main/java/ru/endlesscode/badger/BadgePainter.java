@@ -64,26 +64,26 @@ class BadgePainter {
 
         Rectangle addInfoArea = null;
         Rectangle fullNameArea;
-        int nameAreaHeight = (int) (Config.TEXT_AREA_HEIGHT * 0.7);
+        int nameAreaHeight = (int) (Config.TEXT_AREA_HEIGHT * 0.5);
 
         if (entry.hasAddInfo()) {
             int addInfoHeight = nameAreaHeight / 4;
             addInfoArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y, Config.TEXT_AREA_WIDTH, addInfoHeight);
-            fullNameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y + addInfoHeight + Config.NAME_SPACE,
-                    Config.TEXT_AREA_WIDTH, nameAreaHeight - addInfoHeight - Config.NAME_SPACE);
+            fullNameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y + addInfoHeight,
+                    Config.TEXT_AREA_WIDTH, nameAreaHeight - addInfoHeight);
         } else {
             fullNameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y, Config.TEXT_AREA_WIDTH, nameAreaHeight);
         }
 
         if (entry.hasAddInfo()) {
             g2d.setColor(Config.INFO_COLOR);
-            drawCentredText(g2d, addInfoArea, entry.getAddInfo(), Config.NAME_FONT, 25);
+            drawCentredText(g2d, addInfoArea, entry.getAddInfo(), Config.NAME_FONT, Config.INFO_MAX_SIZE);
         }
 
         g2d.setColor(Config.NAME_COLOR);
         drawFullName(g2d, fullNameArea, entry);
 
-        int nameAreaTopSpace = Config.TEXT_AREA_Y - fullNameArea.y;
+        int nameAreaTopSpace = fullNameArea.y - Config.TEXT_AREA_Y;
         int freeSpace = Config.TEXT_AREA_HEIGHT - fullNameArea.height - nameAreaTopSpace - Config.NAME_SPACE;
         Rectangle quoteArea = new Rectangle(Config.TEXT_AREA_X, fullNameArea.y + fullNameArea.height + Config.NAME_SPACE,
                 Config.TEXT_AREA_WIDTH, freeSpace);
@@ -92,6 +92,16 @@ class BadgePainter {
         g2d.dispose();
 
         ImageIO.write(badge, "png", new File("Badger/temp/badges", entry.getFileName() + ".png"));
+    }
+
+    private static void drawCentredText(Graphics2D g2d, Rectangle area, String text, String fontName, int maxSize) {
+        DrawableText drawableText = new DrawableText(g2d, fontName, text);
+        drawableText.fitToAreaWithMax(area.getSize(), maxSize);
+        drawableText.drawCentredAt(area);
+
+        if (Config.DEBUG) {
+            drawDebugShapes(g2d, Color.BLUE, area);
+        }
     }
 
     private static void drawFullName(Graphics2D g2d, Rectangle fullNameArea, Entry entry) {
@@ -217,22 +227,6 @@ class BadgePainter {
         }
     }
 
-    private static void drawCentredText(Graphics2D g2d, Rectangle area, String text, String fontName, int startSize) {
-        Font font = getSizedFontFromLow(g2d, area.getSize(), text, fontName, startSize);
-        FontMetrics metrics = g2d.getFontMetrics(font);
-        int height = metrics.getHeight();
-        int width = metrics.stringWidth(text);
-
-        int x = area.x + (area.width - width) / 2;
-        int y = area.y + area.height - (area.height - height + metrics.getAscent()) / 2;
-        g2d.setFont(font);
-        g2d.drawString(text, x, y);
-
-        if (Config.DEBUG) {
-            drawDebugShapes(g2d, Color.BLUE, area);
-        }
-    }
-
     private static void drawDebugShapes(Graphics2D g2d, Color color, Shape... shapes) {
         Color oldColor = g2d.getColor();
         g2d.setColor(color);
@@ -240,52 +234,6 @@ class BadgePainter {
             g2d.draw(shape);
         }
         g2d.setColor(oldColor);
-    }
-
-    private static Font getSizedFontFromLow(Graphics2D g2d, Dimension area, String text, String fontName, int lowSize) {
-        float fontSize = lowSize;
-        int height;
-        int width;
-        FontMetrics metrics;
-        Font font = new Font(fontName, Font.PLAIN, lowSize);
-
-        while (true) {
-            Font tempFont = font.deriveFont(fontSize);
-            metrics = g2d.getFontMetrics(tempFont);
-
-            height = metrics.getHeight();
-            width = metrics.stringWidth(text);
-            if (height > area.height || width > area.width) {
-                break;
-            }
-
-            font = tempFont;
-            fontSize++;
-        }
-
-        return font;
-    }
-
-    private static Font getSizedFontFromHigh(Graphics2D g2d, Dimension area, String text, String fontName, int highSize) {
-        return getSizedFontFromHigh(g2d, area, text, fontName, highSize, 0);
-    }
-
-    private static Font getSizedFontFromHigh(Graphics2D g2d, Dimension area, String text, String fontName, int highSize, int addHeight) {
-        Font font = new Font(fontName, Font.PLAIN, highSize);
-
-        FontMetrics metrics = g2d.getFontMetrics(font);
-        int height = metrics.getHeight();
-        int width = metrics.stringWidth(text);
-        float size = highSize;
-
-        while (width > area.width || height + addHeight > area.height) {
-            size--;
-            font = font.deriveFont(size);
-            height = metrics.getHeight();
-            width = metrics.stringWidth(text);
-        }
-
-        return font;
     }
 
     public static void initFonts() {
