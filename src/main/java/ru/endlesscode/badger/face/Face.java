@@ -30,11 +30,26 @@ public class Face {
     private final int height;
     private final int pointX;
     private final int pointY;
+    private final boolean skip;
 
     private boolean doubtful = false;
 
     public Face(File file) throws IOException, UnirestException, FaceNotFoundException, MetadataException, ImageProcessingException {
         BufferedImage image = ImageRotateUtil.orientatedImage(file);
+
+        if (Math.abs(image.getWidth() - Config.PHOTO_WIDTH) < 4 && Math.abs(image.getHeight() - Config.PHOTO_HEIGHT) < 4) {
+            this.image = image;
+            x = 0;
+            y = 0;
+            width = 0;
+            height = 0;
+            pointX = 0;
+            pointY = 0;
+            this.skip = true;
+            return;
+        }
+
+        this.skip = false;
 
         // Проверяем соотношение сторон и обрезаем до нужного
         if ((float) image.getWidth() / image.getHeight() > Config.RATIO) {
@@ -99,6 +114,10 @@ public class Face {
     }
 
     public BufferedImage getImage() {
+        if (this.skip) {
+            return image;
+        }
+
         int leftSpace = this.x;
         int rightSpace = this.image.getWidth() - this.x - this.width;
 
