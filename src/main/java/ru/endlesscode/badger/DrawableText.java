@@ -22,7 +22,7 @@ public class DrawableText {
         float fontSize = maxSize;
         this.setFontSize(maxSize);
 
-        Dimension textArea = this.getBounds();
+        Dimension textArea = this.getVisibleSize();
         double widthScale = area.getWidth() / textArea.getWidth();
         double heightScale = area.getHeight() / textArea.getHeight();
         double scale = Math.min(widthScale, heightScale);
@@ -41,19 +41,31 @@ public class DrawableText {
     }
 
     private Point getDrawingStart(Rectangle area) {
-        Dimension textArea = getBounds();
-        int x = area.x + (area.width - textArea.width) / 2;
-        int y = area.y + area.height - (area.height - textArea.height) / 2;
+        Dimension textArea = getVisibleSize();
+
+        int neededX = area.x + (area.width - textArea.width) / 2;
+        int neededY = area.y + (area.height - textArea.height) / 2;
+
+        int x = neededX;
+        int y = neededY + textArea.height;
+
+        Rectangle givenBounds = getVisibleBounds(x, y);
+        x -= givenBounds.x - neededX;
+        y -= givenBounds.y - neededY;
 
         return new Point(x, y);
     }
 
-    public Dimension getBounds() {
+    public Dimension getVisibleSize() {
+        return this.getVisibleBounds(0, 0).getSize();
+    }
+
+    public Rectangle getVisibleBounds(int x, int y) {
         FontRenderContext frc = graphics.getFontRenderContext();
         TextLayout layout = new TextLayout(text, font, frc);
-        Rectangle textBounds = layout.getPixelBounds(frc, 0, 0);
+        layout.getDescent();
 
-        return textBounds.getSize();
+        return layout.getPixelBounds(frc, x, y);
     }
 
     public void setFontSize(float size) {
