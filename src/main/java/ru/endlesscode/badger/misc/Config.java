@@ -42,6 +42,7 @@ public class Config {
     public static int NAME_MIN_SIZE;
     public static int NAME_MAX_SIZE;
     public static int NAME_SPACE;
+    public static boolean NAME_UPPER_CASE;
 
     public static String QUOTE_FONT;
     public static float QUOTE_MIN_SIZE;
@@ -49,6 +50,7 @@ public class Config {
 
     public static int INFO_MAX_SIZE;
     public static int INFO_SPACE;
+    public static boolean INFO_UPPER_CASE;
 
     public static Color NAME_COLOR;
     public static Color QUOTE_COLOR;
@@ -95,6 +97,7 @@ public class Config {
         NAME_MIN_SIZE = Integer.parseInt(config.getProperty("name.min", "50"));
         NAME_MAX_SIZE = Integer.parseInt(config.getProperty("name.max", "80"));
         NAME_SPACE = Integer.parseInt(config.getProperty("name.space", "15"));
+        NAME_UPPER_CASE = Boolean.parseBoolean(config.getProperty("name.upper", "true"));
 
         QUOTE_FONT = config.getProperty("quote.font", "Arial");
         QUOTE_MIN_SIZE = Integer.parseInt(config.getProperty("quote.min", "50"));
@@ -102,6 +105,7 @@ public class Config {
 
         INFO_MAX_SIZE = Integer.parseInt(config.getProperty("info.max", "30"));
         INFO_SPACE = Integer.parseInt(config.getProperty("info.space", "10"));
+        INFO_UPPER_CASE = Boolean.parseBoolean(config.getProperty("info.upper", "false"));
 
         NAME_COLOR = Utils.colorFromHex(config.getProperty("color.name", "#000000"));
         QUOTE_COLOR = Utils.colorFromHex(config.getProperty("color.quote", "#000000"));

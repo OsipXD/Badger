@@ -77,7 +77,7 @@ class BadgePainter {
 
         if (entry.hasAddInfo()) {
             g2d.setColor(Config.INFO_COLOR);
-            drawCentredText(g2d, addInfoArea, entry.getAddInfo().toUpperCase(), Config.NAME_FONT, Config.INFO_MAX_SIZE);
+            drawCentredText(g2d, addInfoArea, entry.getVisibleAddInfo(), Config.NAME_FONT, Config.INFO_MAX_SIZE);
         }
 
         g2d.setColor(Config.NAME_COLOR);
@@ -108,10 +108,7 @@ class BadgePainter {
         int surnameSize = Config.NAME_MAX_SIZE;
         int nameSize = Config.NAME_MAX_SIZE;
 
-        String name = entry.getName().toUpperCase();
-        if (entry.hasPatronymic()) {
-            name += " " + entry.getPatronymic().toUpperCase();
-        }
+        String name = entry.getVisibleName();
 
         DrawableText drawableName = new DrawableText(g2d, Config.NAME_FONT, name);
 
@@ -128,7 +125,7 @@ class BadgePainter {
         drawableName.fitToAreaWithMax(new Dimension(fullNameArea.width, fullNameArea.height / 3 * 2), nameSize);
         Dimension nameBounds = drawableName.getVisibleSize();
 
-        String surname = entry.getSurname().toUpperCase();
+        String surname = entry.getVisibleSurname();
         DrawableText drawableSurname = new DrawableText(g2d, Config.NAME_FONT, surname);
         drawableSurname.fitToAreaWithMax(new Dimension(fullNameArea.width, fullNameArea.height - nameBounds.height), surnameSize);
         Dimension surnameBounds = drawableSurname.getVisibleSize();

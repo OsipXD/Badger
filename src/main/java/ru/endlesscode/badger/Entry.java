@@ -3,6 +3,7 @@ package ru.endlesscode.badger;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.endlesscode.badger.misc.Config;
 
 /**
  * Created by OsipXD on 14.03.2016
@@ -66,8 +67,22 @@ public class Entry {
         return (this.id < 10 ? "0" : "") + this.id + "_" + fileName;
     }
 
+    public String getVisibleName() {
+        String visibleName = name;
+
+        if (this.hasPatronymic()) {
+            visibleName += " " + patronymic;
+        }
+
+        if (Config.NAME_UPPER_CASE) {
+            visibleName = visibleName.toUpperCase();
+        }
+
+        return visibleName;
+    }
+
     @Contract(pure = true)
-    boolean hasPatronymic() {
+    private boolean hasPatronymic() {
         return this.patronymic != null;
     }
 
@@ -81,23 +96,12 @@ public class Entry {
         return this.surname != null;
     }
 
-    @Nullable
-    public String getSurname() {
-        return surname;
+    public String getVisibleSurname() {
+        return !Config.NAME_UPPER_CASE || surname == null ? surname : surname.toUpperCase();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    @Nullable
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    @Nullable
-    public String getAddInfo() {
-        return addInfo;
+    public String getVisibleAddInfo() {
+        return !Config.INFO_UPPER_CASE || addInfo == null ? addInfo : addInfo.toUpperCase();
     }
 
     @Nullable
