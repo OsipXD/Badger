@@ -41,15 +41,16 @@ public class Config {
     public static String NAME_FONT;
     public static int NAME_MIN_SIZE;
     public static int NAME_MAX_SIZE;
+    public static int NAME_SPACE;
 
     public static String QUOTE_FONT;
     public static float QUOTE_MIN_SIZE;
-    public static float QUOTE_MAX_SIZE;
 
+    public static float QUOTE_MAX_SIZE;
     public static Color NAME_COLOR;
     public static Color QUOTE_COLOR;
-    public static Color INFO_COLOR;
 
+    public static Color INFO_COLOR;
     public static boolean DEBUG;
 
     public static void loadConfig() throws Exception {
@@ -90,6 +91,8 @@ public class Config {
         NAME_FONT = config.getProperty("name.font", "Arial");
         NAME_MIN_SIZE = Integer.parseInt(config.getProperty("name.min", "50"));
         NAME_MAX_SIZE = Integer.parseInt(config.getProperty("name.max", "80"));
+        NAME_SPACE = Integer.parseInt(config.getProperty("name.space", "15"));
+
         QUOTE_FONT = config.getProperty("quote.font", "Arial");
         QUOTE_MIN_SIZE = Integer.parseInt(config.getProperty("quote.min", "50"));
         QUOTE_MAX_SIZE = Integer.parseInt(config.getProperty("quote.max", "80"));

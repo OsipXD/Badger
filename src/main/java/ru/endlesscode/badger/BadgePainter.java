@@ -26,8 +26,30 @@ import java.util.List;
  * All rights reserved 2014 - 2016 © «EndlessCode Group»
  */
 class BadgePainter {
+    public static void drawAllBadges() {
+        List<Entry> entries = Badger.getEntryManager().getEntryList();
+        ProgressBar progressBar = new ProgressBar("Составление бейджиков", entries.size());
+        progressBar.start();
+
+        Timer timer = new Timer();
+        timer.start();
+
+        for (Entry entry : entries) {
+            try {
+                drawBadge(entry);
+            } catch (IOException e) {
+                Log.getLogger().warning("BadgePainter#drawAllBadges(): " + e.getMessage());
+            } finally {
+                progressBar.increaseProgress();
+            }
+        }
+
+        progressBar.pause("Бейджи составлены (" + timer.stop() + " s)");
+        System.out.println("Проверьте правильность их составления в папке \"temp/badges\" и исправьте при необходимости.");
+        Badger.waitEnter();
+    }
+
     private static void drawBadge(Entry entry) throws IOException {
-//        BufferedImage pattern = ImageIO.read();
         BufferedImage badge =  new BufferedImage(Config.BADGE_WIDTH, Config.BADGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = badge.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -41,15 +63,16 @@ class BadgePainter {
         g2d.drawImage(pattern, 0, 0, null);
 
         Rectangle addInfoArea = null;
-        Rectangle nameArea;
+        Rectangle fullNameArea;
         int nameAreaHeight = (int) (Config.TEXT_AREA_HEIGHT * 0.7);
 
         if (entry.hasAddInfo()) {
             int addInfoHeight = nameAreaHeight / 4;
             addInfoArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y, Config.TEXT_AREA_WIDTH, addInfoHeight);
-            nameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y + addInfoHeight, Config.TEXT_AREA_WIDTH, nameAreaHeight - addInfoHeight);
+            fullNameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y + addInfoHeight + Config.NAME_SPACE,
+                    Config.TEXT_AREA_WIDTH, nameAreaHeight - addInfoHeight - Config.NAME_SPACE);
         } else {
-            nameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y, Config.TEXT_AREA_WIDTH, nameAreaHeight);
+            fullNameArea = new Rectangle(Config.TEXT_AREA_X, Config.TEXT_AREA_Y, Config.TEXT_AREA_WIDTH, nameAreaHeight);
         }
 
         if (entry.hasAddInfo()) {
@@ -58,14 +81,62 @@ class BadgePainter {
         }
 
         g2d.setColor(Config.NAME_COLOR);
-        drawName(g2d, nameArea, entry);
+        drawFullName(g2d, fullNameArea, entry);
 
-        Rectangle quoteArea = new Rectangle(Config.TEXT_AREA_X, nameArea.y + nameArea.height, Config.TEXT_AREA_WIDTH, Config.TEXT_AREA_Y + Config.TEXT_AREA_HEIGHT - nameArea.y - nameArea.height);
+        int nameAreaTopSpace = Config.TEXT_AREA_Y - fullNameArea.y;
+        int freeSpace = Config.TEXT_AREA_HEIGHT - fullNameArea.height - nameAreaTopSpace - Config.NAME_SPACE;
+        Rectangle quoteArea = new Rectangle(Config.TEXT_AREA_X, fullNameArea.y + fullNameArea.height + Config.NAME_SPACE,
+                Config.TEXT_AREA_WIDTH, freeSpace);
         g2d.setColor(Config.QUOTE_COLOR);
         drawQuote(g2d, quoteArea, entry);
         g2d.dispose();
 
         ImageIO.write(badge, "png", new File("Badger/temp/badges", entry.getFileName() + ".png"));
+    }
+
+    private static void drawFullName(Graphics2D g2d, Rectangle fullNameArea, Entry entry) {
+        int surnameSize = Config.NAME_MAX_SIZE;
+        int nameSize = Config.NAME_MAX_SIZE;
+
+        String name = entry.getName().toUpperCase();
+        if (entry.hasPatronymic()) {
+            name += " " + entry.getPatronymic().toUpperCase();
+        }
+
+        DrawableText drawableName = new DrawableText(g2d, Config.NAME_FONT, name);
+
+        // Обрабатываем случай, когда у нас только имя
+        if (!entry.hasSurname()) {
+            drawableName.fitToAreaWithMax(fullNameArea.getSize(), nameSize);
+            drawableName.drawCentredAt(fullNameArea);
+
+            Dimension nameBounds = drawableName.getBounds();
+            fullNameArea.setSize(fullNameArea.width, fullNameArea.height + (fullNameArea.height - nameBounds.height) / 2);
+            return;
+        }
+
+        drawableName.fitToAreaWithMax(new Dimension(fullNameArea.width, fullNameArea.height / 3 * 2), nameSize);
+        Dimension nameBounds = drawableName.getBounds();
+
+        String surname = entry.getSurname().toUpperCase();
+        DrawableText drawableSurname = new DrawableText(g2d, Config.NAME_FONT, surname);
+        drawableSurname.fitToAreaWithMax(new Dimension(fullNameArea.width, fullNameArea.height - nameBounds.height), surnameSize);
+        Dimension surnameBounds = drawableSurname.getBounds();
+
+        int fullNameHeight = nameBounds.height + Config.NAME_SPACE + surnameBounds.height;
+        fullNameArea.setSize(fullNameArea.width, fullNameHeight);
+
+        int nameY = fullNameArea.y;
+        Rectangle nameArea = new Rectangle(fullNameArea.x, nameY, fullNameArea.width, nameBounds.height);
+        drawableName.drawCentredAt(nameArea);
+
+        int surnameY = nameY + nameArea.height + Config.NAME_SPACE;
+        Rectangle surnameArea = new Rectangle(fullNameArea.x, surnameY, fullNameArea.width, surnameBounds.height);
+        drawableSurname.drawCentredAt(surnameArea);
+
+        if (Config.DEBUG) {
+            drawDebugShapes(g2d, Color.RED, fullNameArea, nameArea, surnameArea);
+        }
     }
 
     private static void drawQuote(Graphics2D g2d, Rectangle quoteArea, Entry entry) {
@@ -142,70 +213,7 @@ class BadgePainter {
         }
 
         if (Config.DEBUG) {
-            g2d.draw(quoteArea);
-        }
-    }
-
-    private static void drawName(Graphics2D g2d, Rectangle nameArea, Entry entry) {
-        int surnameSize = Config.NAME_MIN_SIZE;
-        int nameSize = Config.NAME_MIN_SIZE;
-        FontMetrics metrics;
-
-        String name = entry.getName();
-        if (entry.hasPatronymic()) {
-            name += " " + entry.getPatronymic();
-        }
-
-        Font nameFont = new Font(Config.NAME_FONT, Font.PLAIN, nameSize);
-
-        // Обрабатываем случай, когда у нас только имя
-        if (!entry.hasSurname()) {
-            nameFont = getSizedFontFromHigh(g2d, nameArea.getSize(), name, nameFont.getFontName(), Config.NAME_MAX_SIZE);
-            metrics = g2d.getFontMetrics(nameFont);
-            int x = nameArea.x + (nameArea.width - metrics.stringWidth(name)) / 2;
-            int y = nameArea.y + nameArea.height - (nameArea.height - metrics.getHeight() + metrics.getAscent()) / 2;
-
-            g2d.setFont(nameFont);
-            g2d.drawString(name, x, y);
-            nameArea.setSize(nameArea.width, nameArea.height - y + nameArea.y);
-            return;
-        }
-
-        nameFont = getSizedFontFromHigh(g2d, nameArea.getSize(), name, nameFont.getFontName(), nameSize);
-        metrics = g2d.getFontMetrics(nameFont);
-        int nameHeight = metrics.getHeight();
-
-        String surname = entry.getSurname();
-        Font surnameFont = getSizedFontFromHigh(g2d, new Dimension(nameArea.width, nameArea.height - nameHeight), surname,
-                nameFont.getFontName(), surnameSize);
-        metrics = g2d.getFontMetrics(surnameFont);
-        int surnameWidth = metrics.stringWidth(surname);
-        int surnameHeight = metrics.getHeight();
-        int surnameAscent = metrics.getAscent();
-
-        nameFont = getSizedFontFromLow(g2d, new Dimension(nameArea.width, nameArea.height - surnameHeight), name,
-                nameFont.getFontName(), nameFont.getSize());
-        metrics = g2d.getFontMetrics(nameFont);
-        nameHeight = metrics.getHeight();
-        int nameWidth = metrics.stringWidth(name);
-
-        int surnameX = nameArea.x + (nameArea.width - surnameWidth) / 2;
-        int surnameY = nameArea.y + nameArea.height - (nameArea.height - nameHeight - surnameHeight + surnameAscent) / 2 + surnameAscent / 4;
-        int nameX = nameArea.x + (nameArea.width - nameWidth) / 2;
-        int nameY = surnameY - surnameHeight - surnameAscent / 4;
-
-        g2d.setFont(surnameFont);
-        g2d.drawString(surname, surnameX, surnameY);
-
-        g2d.setFont(nameFont);
-        g2d.drawString(name, nameX, nameY);
-
-        nameArea.setSize(nameArea.width, surnameY - nameArea.y + surnameAscent / 2);
-
-        if (Config.DEBUG) {
-            g2d.drawRect(nameX, nameY, nameWidth, nameHeight);
-            g2d.drawRect(surnameX, surnameY, surnameWidth, surnameHeight);
-            g2d.draw(nameArea);
+            drawDebugShapes(g2d, Color.GREEN, quoteArea);
         }
     }
 
@@ -221,8 +229,17 @@ class BadgePainter {
         g2d.drawString(text, x, y);
 
         if (Config.DEBUG) {
-            g2d.drawRect(x, y, width, height);
+            drawDebugShapes(g2d, Color.BLUE, area);
         }
+    }
+
+    private static void drawDebugShapes(Graphics2D g2d, Color color, Shape... shapes) {
+        Color oldColor = g2d.getColor();
+        g2d.setColor(color);
+        for (Shape shape: shapes) {
+            g2d.draw(shape);
+        }
+        g2d.setColor(oldColor);
     }
 
     private static Font getSizedFontFromLow(Graphics2D g2d, Dimension area, String text, String fontName, int lowSize) {
@@ -303,29 +320,6 @@ class BadgePainter {
             }
         }
         System.out.println("Шрифты успешно загружены (" + counter + " шт.)");
-    }
-
-    public static void drawAllBadges() {
-        List<Entry> entries = Badger.getEntryManager().getEntryList();
-        ProgressBar progressBar = new ProgressBar("Составление бейджиков", entries.size());
-        progressBar.start();
-
-        Timer timer = new Timer();
-        timer.start();
-
-        for (Entry entry : entries) {
-            try {
-                drawBadge(entry);
-            } catch (IOException e) {
-                Log.getLogger().warning("BadgePainter#drawAllBadges(): " + e.getMessage());
-            } finally {
-                progressBar.increaseProgress();
-            }
-        }
-
-        progressBar.pause("Бейджи составлены (" + timer.stop() + " s)");
-        System.out.println("Проверьте правильность их составления в папке \"temp/badges\" и исправьте при необходимости.");
-        Badger.waitEnter();
     }
 
     public static void packBadgesToPrint() {
