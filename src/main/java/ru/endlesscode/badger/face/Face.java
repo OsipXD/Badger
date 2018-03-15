@@ -34,7 +34,8 @@ public class Face {
 
     private boolean doubtful = false;
 
-    public Face(File file) throws IOException, UnirestException, FaceNotFoundException, MetadataException, ImageProcessingException {
+    public Face(File file)
+            throws IOException, UnirestException, FaceNotFoundException, MetadataException, ImageProcessingException {
         BufferedImage image = ImageRotateUtil.orientatedImage(file);
 
         if (Math.abs(image.getWidth() - Config.PHOTO_WIDTH) < 4 && Math.abs(image.getHeight() - Config.PHOTO_HEIGHT) < 4) {
