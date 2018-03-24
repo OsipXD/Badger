@@ -2,7 +2,7 @@ package ru.endlesscode.badger.utils;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -33,6 +33,7 @@ public class Utils {
         SYMBOLS = tmp.toString().toCharArray();
     }
 
+    @NotNull
     public static String generateRandomString(int length) {
         Random random = new Random();
         char[] buf = new char[length];
@@ -44,7 +45,8 @@ public class Utils {
         return new String(buf);
     }
 
-    public static BufferedImage resizeImage(BufferedImage img, float scale) {
+    @NotNull
+    public static BufferedImage resizeImage(@NotNull BufferedImage img, float scale) {
         int scaledWidth = (int) (img.getWidth() * scale);
         int scaledHeight = (int) (img.getHeight() * scale);
         Image tmp = img.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
@@ -62,7 +64,7 @@ public class Utils {
     }
 
     @Nullable
-    public static JSONObject parseFaces(HttpResponse<JsonNode> response) {
+    public static JSONObject parseFaces(@NotNull HttpResponse<JsonNode> response) {
         JSONArray faces = response.getBody().getObject().getJSONArray("faces");
         int width = response.getBody().getObject().getJSONObject("image").getInt("width");
 
@@ -95,10 +97,18 @@ public class Utils {
         return faces.getJSONObject(mainFace);
     }
 
-    public static Color colorFromHex(String hexString) {
+    @NotNull
+    public static Color colorFromHex(@NotNull String hexString) {
+        int alpha = hexString.length() > 7 ? hexNum(hexString, 7, 9) : 255;
+
         return new Color(
-                Integer.valueOf(hexString.substring(1, 3), 16),
-                Integer.valueOf(hexString.substring(3, 5), 16),
-                Integer.valueOf(hexString.substring(5, 7), 16));
+                hexNum(hexString, 1, 3),
+                hexNum(hexString, 3, 5),
+                hexNum(hexString, 5, 7),
+                alpha);
+    }
+
+    private static int hexNum(@NotNull String hexString, int from, int to) {
+        return Integer.parseInt(hexString.substring(from, to), 16);
     }
 }
