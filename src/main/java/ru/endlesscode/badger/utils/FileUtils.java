@@ -3,6 +3,7 @@ package ru.endlesscode.badger.utils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * Created by OsipXD on 16.03.2016
@@ -41,11 +42,12 @@ public class FileUtils {
             return null;
         }
 
-        return dir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jpg") || name.endsWith(".JPG");
-            }
-        });
+        File[] files = dir.listFiles((dir1, name) -> name.endsWith(".jpg") || name.endsWith(".JPG"));
+        if (files == null){
+            return null;
+        }
+
+        Arrays.sort(files, Comparator.naturalOrder());
+        return files;
     }
 }
